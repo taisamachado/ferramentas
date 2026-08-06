@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buscar Passagens ✈️</title>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Arial, sans-serif;
+  background: #1a1a2e;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 16px;
+}
+
+h1 {
+  color: #fff;
+  font-size: 26px;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.subtitle {
+  color: #a0a8c0;
+  font-size: 14px;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 4px;
+  margin-top: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+input, select {
+  width: 100%;
+  padding: 11px 14px;
+  font-size: 15px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+input:focus, select:focus {
+  border-color: #4f7cff;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+}
+
+.row > div {
+  flex: 1;
+}
+
+.btn-buscar {
+  display: block;
+  width: 100%;
+  margin-top: 22px;
+  padding: 14px;
+  font-size: 17px;
+  font-weight: bold;
+  background: #4f7cff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-buscar:hover {
+  background: #3a63e0;
+}
+
+.sites-titulo {
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 32px 0 14px;
+  text-align: center;
+}
+
+.sites-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.site-card {
+  background: #16213e;
+  border: 1.5px solid #2a3a5e;
+  border-radius: 12px;
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  text-decoration: none;
+  display: block;
+}
+
+.site-card:hover {
+  background: #1f3060;
+  transform: translateY(-2px);
+}
+
+.site-icon { font-size: 26px; display: block; margin-bottom: 6px; }
+.site-name { color: #fff; font-size: 14px; font-weight: bold; }
+.site-desc { color: #7a8cb0; font-size: 11px; margin-top: 2px; }
+
+.aviso {
+  color: #a0a8c0;
+  font-size: 12px;
+  margin-top: 24px;
+  text-align: center;
+  max-width: 480px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>✈️ Buscador de Passagens</h1>
+<p class="subtitle">Preencha e abra vários sites de uma vez</p>
+
+<div class="card">
+  <label>Origem (código IATA)</label>
+  <input type="text" id="origem" placeholder="ex: GRU, CGH, BSB" maxlength="3" style="text-transform:uppercase">
+
+  <label>Destino (código IATA)</label>
+  <input type="text" id="destino" placeholder="ex: LHR, JFK, CDG" maxlength="3" style="text-transform:uppercase">
+
+  <div class="row">
+    <div>
+      <label>Ida</label>
+      <input type="date" id="ida">
+    </div>
+    <div>
+      <label>Volta</label>
+      <input type="date" id="volta">
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label>Adultos</label>
+      <select id="adultos">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+    </div>
+    <div>
+      <label>Classe</label>
+      <select id="classe">
+        <option value="e">Econômica</option>
+        <option value="b">Executiva</option>
+        <option value="f">Primeira</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="btn-buscar" onclick="buscarTodos()">🔍 Buscar em todos os sites</button>
+</div>
+
+<p class="sites-titulo">Ou clique em um site específico</p>
+
+<div class="sites-grid" id="sitesGrid">
+  <a class="site-card" id="link-google" target="_blank">
+    <span class="site-icon">🌐</span>
+    <span class="site-name">Google Flights</span>
+    <span class="site-desc">google.com/flights</span>
+  </a>
+  <a class="site-card" id="link-kayak" target="_blank">
+    <span class="site-icon">🛶</span>
+    <span class="site-name">Kayak</span>
+    <span class="site-desc">kayak.com.br</span>
+  </a>
+  <a class="site-card" id="link-decolar" target="_blank">
+    <span class="site-icon">🌎</span>
+    <span class="site-name">Decolar</span>
+    <span class="site-desc">decolar.com</span>
+  </a>
+  <a class="site-card" id="link-skyscanner" target="_blank">
+    <span class="site-icon">🌤️</span>
+    <span class="site-name">Skyscanner</span>
+    <span class="site-desc">skyscanner.com.br</span>
+  </a>
+  <a class="site-card" id="link-latam" target="_blank">
+    <span class="site-icon">🔴</span>
+    <span class="site-name">LATAM</span>
+    <span class="site-desc">latamairlines.com</span>
+  </a>
+  <a class="site-card" id="link-gol" target="_blank">
+    <span class="site-icon">🟠</span>
+    <span class="site-name">GOL</span>
+    <span class="site-desc">voegol.com.br</span>
+  </a>
+</div>
+
+<p class="aviso">💡 Alguns sites podem bloquear pop-ups. Permita-os no seu navegador para abrir todos de uma vez.</p>
+
+<script>
+function fmt(dateStr) {
+  return dateStr ? dateStr.replace(/-/g, "") : "";
+}
+
+function getDados() {
+  return {
+    origem: document.getElementById("origem").value.toUpperCase().trim(),
+    destino: document.getElementById("destino").value.toUpperCase().trim(),
+    ida: document.getElementById("ida").value,
+    volta: document.getElementById("volta").value,
+    adultos: document.getElementById("adultos").value,
+    classe: document.getElementById("classe").value
+  };
+}
+
+function urlGoogle(d) {
+  const base = "https://www.google.com/travel/flights";
+  if (!d.origem || !d.destino) return base;
+  let url = `${base}/search?tfs=CBwQAhoeEgoyMDI1LTA3LTE5agcIARIDR1JVcgcIARIDTEhSGh4SCjIwMjUtMDgtMDVqBwgBEgNMSFJyBwgBEgNHUlU`;
+  // Fallback para URL simples se sem datas
+  if (d.ida) {
+    url = `https://www.google.com/travel/flights?q=Flights+from+${d.origem}+to+${d.destino}+on+${d.ida}`;
+    if (d.volta) url += `+return+${d.volta}`;
+  } else {
+    url = `https://www.google.com/travel/flights?q=Flights+from+${d.origem}+to+${d.destino}`;
+  }
+  return url;
+}
+
+function urlKayak(d) {
+  if (!d.origem || !d.destino) return "https://www.kayak.com.br/flights";
+  const tipo = d.volta ? "flights" : "flights";
+  const rotaV = d.volta ? `/${d.destino}-${d.origem}/${fmt(d.volta)}` : "";
+  return `https://www.kayak.com.br/${tipo}/${d.origem}-${d.destino}/${fmt(d.ida)}${rotaV}/${d.adultos}`;
+}
+
+function urlSkyscanner(d) {
+  if (!d.origem || !d.destino) return "https://www.skyscanner.com.br";
+  const volta = d.volta ? fmt(d.volta) : "no";
+  return `https://www.skyscanner.com.br/transporte/voos/${d.origem.toLowerCase()}/${d.destino.toLowerCase()}/${fmt(d.ida)}/${volta}/?adults=${d.adultos}&cabinclass=${d.classe === "e" ? "economy" : d.classe === "b" ? "business" : "first"}`;
+}
+
+function urlDecolar(d) {
+  if (!d.origem || !d.destino) return "https://www.decolar.com/shop/flights";
+  return `https://www.decolar.com/shop/flights/results/${d.volta ? "roundtrip" : "oneway"}/${d.origem}/${d.destino}/${d.ida || ""}/${d.volta || ""}/${d.adultos}/0/0`;
+}
+
+function urlLatam(d) {
+  if (!d.origem || !d.destino) return "https://www.latamairlines.com/br/pt/ofertas-voos";
+  return `https://www.latamairlines.com/br/pt/ofertas-voos?origin=${d.origem}&outbound=${d.ida}&destination=${d.destino}&inbound=${d.volta || ""}&adt=${d.adultos}&chd=0&inf=0&trip=${d.volta ? "RT" : "OW"}&cabin=${d.classe === "e" ? "Economy" : "Business"}`;
+}
+
+function urlGol(d) {
+  if (!d.origem || !d.destino) return "https://www.voegol.com.br";
+  return `https://www.voegol.com.br/pt/voos?from=${d.origem}&to=${d.destino}&departure=${d.ida}&return=${d.volta}&adults=${d.adultos}&type=${d.volta ? "roundtrip" : "oneway"}`;
+}
+
+function atualizarLinks() {
+  const d = getDados();
+  document.getElementById("link-google").href = urlGoogle(d);
+  document.getElementById("link-kayak").href = urlKayak(d);
+  document.getElementById("link-skyscanner").href = urlSkyscanner(d);
+  document.getElementById("link-decolar").href = urlDecolar(d);
+  document.getElementById("link-latam").href = urlLatam(d);
+  document.getElementById("link-gol").href = urlGol(d);
+}
+
+function buscarTodos() {
+  const d = getDados();
+  if (!d.origem || !d.destino) {
+    alert("Preencha ao menos a origem e o destino!");
+    return;
+  }
+  const urls = [urlGoogle(d), urlKayak(d), urlSkyscanner(d), urlDecolar(d), urlLatam(d), urlGol(d)];
+  urls.forEach(url => window.open(url, "_blank"));
+}
+
+// Atualiza links ao digitar
+["origem","destino","ida","volta","adultos","classe"].forEach(id => {
+  document.getElementById(id).addEventListener("input", atualizarLinks);
+  document.getElementById(id).addEventListener("change", atualizarLinks);
+});
+
+// Datas padrão: próximas 2 semanas
+const hoje = new Date();
+const em2semanas = new Date(hoje);
+em2semanas.setDate(hoje.getDate() + 14);
+const em3semanas = new Date(hoje);
+em3semanas.setDate(hoje.getDate() + 21);
+
+function toInput(d) {
+  return d.toISOString().split("T")[0];
+}
+
+document.getElementById("ida").value = toInput(em2semanas);
+document.getElementById("volta").value = toInput(em3semanas);
+
+atualizarLinks();
+</script>
+
+</body>
+</html>

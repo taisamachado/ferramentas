@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ferramentas</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: Arial, sans-serif;
+  background: #1a1a2e;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 16px;
+}
+h1 { color: #fff; font-size: 28px; margin-bottom: 8px; }
+.subtitle { color: #a0a8c0; font-size: 14px; margin-bottom: 36px; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 520px;
+}
+.tool-card {
+  background: #16213e;
+  border: 1.5px solid #2a3a5e;
+  border-radius: 14px;
+  padding: 24px 16px;
+  text-align: center;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.1s;
+}
+.tool-card:hover {
+  background: #1f3060;
+  transform: translateY(-3px);
+}
+.tool-icon { font-size: 36px; display: block; margin-bottom: 10px; }
+.tool-name { color: #fff; font-size: 15px; font-weight: bold; }
+.tool-desc { color: #7a8cb0; font-size: 12px; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<h1>🛠️ Ferramentas</h1>
+<p class="subtitle">Clique para abrir</p>
+
+<div class="grid">
+  <a class="tool-card" href="passagens/">
+    <span class="tool-icon">✈️</span>
+    <span class="tool-name">Passagens Aéreas</span>
+    <span class="tool-desc">Busca em vários sites de uma vez</span>
+  </a>
+</div>
+
+</body>
+</html>
