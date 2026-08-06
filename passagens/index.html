@@ -3,327 +3,813 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Buscar Passagens ✈️</title>
-
+<title>✈️ Passagens Aéreas</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: Arial, sans-serif;
-  background: #1a1a2e;
+  background: #0f0f1a;
+  color: #e0e0f0;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 30px 16px;
+  padding: 24px 16px 60px;
 }
 
-h1 {
-  color: #fff;
-  font-size: 26px;
-  margin-bottom: 6px;
-  text-align: center;
-}
+.container { max-width: 560px; margin: auto; }
 
-.subtitle {
-  color: #a0a8c0;
-  font-size: 14px;
-  margin-bottom: 28px;
-  text-align: center;
-}
+h1 { font-size: 24px; text-align: center; margin-bottom: 4px; }
+.subtitle { color: #7a8cb0; font-size: 13px; text-align: center; margin-bottom: 24px; }
 
+/* CARD FORMULÁRIO */
 .card {
-  background: #fff;
+  background: #1a1a2e;
+  border: 1px solid #2a3a5e;
   border-radius: 16px;
-  padding: 24px;
-  width: 100%;
-  max-width: 480px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  padding: 20px;
+  margin-bottom: 16px;
 }
 
-label {
-  display: block;
-  font-size: 13px;
-  color: #555;
-  margin-bottom: 4px;
-  margin-top: 14px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+.card h2 { font-size: 14px; color: #a0a8c0; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+
+label { display: block; font-size: 11px; color: #7a8cb0; margin-bottom: 3px; margin-top: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+label:first-of-type { margin-top: 0; }
 
 input, select {
   width: 100%;
-  padding: 11px 14px;
+  padding: 10px 12px;
   font-size: 15px;
-  border: 1.5px solid #ddd;
+  background: #0f0f1a;
+  border: 1.5px solid #2a3a5e;
   border-radius: 8px;
+  color: #e0e0f0;
   outline: none;
   transition: border 0.2s;
 }
+input:focus, select:focus { border-color: #4f7cff; }
+input::placeholder { color: #3a4a6e; }
 
-input:focus, select:focus {
-  border-color: #4f7cff;
-}
+.row { display: flex; gap: 10px; }
+.row > div { flex: 1; }
 
-.row {
-  display: flex;
-  gap: 12px;
-}
-
-.row > div {
-  flex: 1;
-}
-
+/* BOTÃO BUSCAR */
 .btn-buscar {
-  display: block;
   width: 100%;
-  margin-top: 22px;
-  padding: 14px;
-  font-size: 17px;
+  margin-top: 18px;
+  padding: 13px;
+  font-size: 16px;
   font-weight: bold;
-  background: #4f7cff;
+  background: linear-gradient(135deg, #4f7cff, #7c5cd8);
   color: white;
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: opacity 0.2s, transform 0.1s;
 }
+.btn-buscar:hover { opacity: 0.9; transform: scale(1.01); }
+.btn-buscar:active { transform: scale(0.98); }
 
-.btn-buscar:hover {
-  background: #3a63e0;
+/* CARTÃO DO DESTINO */
+.destino-card {
+  display: none;
+  background: linear-gradient(135deg, #16213e, #1a2a4e);
+  border: 1px solid #2a3a5e;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 16px;
 }
-
-.sites-titulo {
-  color: #fff;
-  font-size: 16px;
+.destino-banner {
+  height: 120px;
+  background: #2a3a5e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  position: relative;
+}
+.destino-banner .cidade-nome {
+  position: absolute;
+  bottom: 8px;
+  left: 14px;
+  font-size: 20px;
   font-weight: bold;
-  margin: 32px 0 14px;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+.destino-info {
+  padding: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.info-chip {
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 10px 8px;
   text-align: center;
 }
+.info-chip .ic { font-size: 18px; }
+.info-chip .lbl { font-size: 10px; color: #7a8cb0; margin-top: 2px; display: block; }
+.info-chip .val { font-size: 13px; font-weight: bold; }
 
+/* CALENDÁRIO */
+.cal-section { margin-bottom: 16px; }
+.cal-title { font-size: 13px; color: #a0a8c0; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.cal-day-header { text-align: center; font-size: 10px; color: #7a8cb0; padding: 4px 0; }
+.cal-day {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: default;
+  background: #1a1a2e;
+  border: 1px solid #2a3a5e;
+  transition: transform 0.1s;
+}
+.cal-day.vazio { background: transparent; border-color: transparent; }
+.cal-day.barato { background: #1a3a1a; border-color: #2a6a2a; color: #5aff5a; }
+.cal-day.medio { background: #3a2a00; border-color: #6a4a00; color: #ffaa00; }
+.cal-day.caro { background: #3a1a1a; border-color: #6a2a2a; color: #ff6060; }
+.cal-day.selecionado { outline: 2px solid #4f7cff; }
+.cal-day .price-hint { font-size: 8px; opacity: 0.7; }
+
+/* SITES */
 .sites-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  width: 100%;
-  max-width: 480px;
+  gap: 10px;
+  margin-bottom: 16px;
 }
 
-.site-card {
+.site-btn {
   background: #16213e;
   border: 1.5px solid #2a3a5e;
   border-radius: 12px;
-  padding: 16px 12px;
+  padding: 14px 10px;
   text-align: center;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
   text-decoration: none;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.15s, transform 0.15s, border-color 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.site-btn:hover { background: #1f3060; border-color: #4f7cff; transform: translateY(-2px); }
+.site-btn:active { transform: scale(0.97); }
+.site-btn.launched { border-color: #5aff5a; background: #1a3a1a; }
+.site-icon { font-size: 24px; }
+.site-name { color: #fff; font-size: 13px; font-weight: bold; }
+.site-status { font-size: 10px; color: #7a8cb0; }
+.site-btn.launched .site-status { color: #5aff5a; }
+
+/* RIPPLE */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(79,124,255,0.3);
+  transform: scale(0);
+  animation: ripple-anim 0.5s linear;
+  pointer-events: none;
+}
+@keyframes ripple-anim {
+  to { transform: scale(4); opacity: 0; }
 }
 
-.site-card:hover {
-  background: #1f3060;
-  transform: translateY(-2px);
-}
-
-.site-icon { font-size: 26px; display: block; margin-bottom: 6px; }
-.site-name { color: #fff; font-size: 14px; font-weight: bold; }
-.site-desc { color: #7a8cb0; font-size: 11px; margin-top: 2px; }
-
-.aviso {
+/* COMPARADOR */
+.comparador-lista { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.comp-row { display: flex; gap: 8px; align-items: center; }
+.comp-row input { flex: 1; }
+.comp-row .site-tag {
+  font-size: 11px;
   color: #a0a8c0;
-  font-size: 12px;
-  margin-top: 24px;
-  text-align: center;
-  max-width: 480px;
+  white-space: nowrap;
+  width: 80px;
+  text-align: right;
 }
+.comp-bar-wrap { height: 28px; background: #0f0f1a; border-radius: 6px; overflow: hidden; margin-top: 4px; position: relative; }
+.comp-bar { height: 100%; border-radius: 6px; transition: width 0.5s ease; display: flex; align-items: center; padding-left: 8px; font-size: 11px; font-weight: bold; color: #fff; min-width: 40px; }
+.comp-winner { color: #5aff5a; font-size: 12px; font-weight: bold; margin-top: 8px; text-align: center; }
+
+/* HISTÓRICO */
+.historico-lista { display: flex; flex-direction: column; gap: 6px; }
+.hist-item {
+  background: #0f0f1a;
+  border: 1px solid #2a3a5e;
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 13px;
+}
+.hist-item:hover { background: #1a1a2e; }
+.hist-rota { font-weight: bold; color: #4f7cff; }
+.hist-data { color: #7a8cb0; font-size: 11px; }
+.hist-del { color: #ff6060; font-size: 16px; padding: 0 4px; cursor: pointer; }
+
+/* ALERTA */
+.alerta-row { display: flex; gap: 8px; align-items: flex-end; }
+.alerta-row > div:first-child { flex: 1; }
+.btn-alerta {
+  padding: 10px 14px;
+  background: #4f7cff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.btn-alerta:hover { background: #3a63e0; }
+.alertas-lista { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.alerta-chip {
+  background: #0f0f1a;
+  border: 1px solid #2a6a2a;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+.alerta-chip .rota { color: #5aff5a; font-weight: bold; }
+.alerta-chip .teto { color: #ffaa00; }
+.alerta-chip .del { color: #ff6060; cursor: pointer; }
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #4f7cff;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: bold;
+  transition: transform 0.3s;
+  z-index: 9999;
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* SECTION LABEL */
+.section-label {
+  font-size: 11px;
+  color: #7a8cb0;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+}
+
+.empty-msg { color: #3a4a6e; font-size: 13px; text-align: center; padding: 12px 0; }
 </style>
 </head>
-
 <body>
 
-<h1>✈️ Buscador de Passagens</h1>
-<p class="subtitle">Preencha e abra vários sites de uma vez</p>
+<div class="container">
+  <h1>✈️ Passagens Aéreas</h1>
+  <p class="subtitle">Busca rápida • Melhores dias • Comparador de preços</p>
 
-<div class="card">
-  <label>Origem (código IATA)</label>
-  <input type="text" id="origem" placeholder="ex: GRU, CGH, BSB" maxlength="3" style="text-transform:uppercase">
-
-  <label>Destino (código IATA)</label>
-  <input type="text" id="destino" placeholder="ex: LHR, JFK, CDG" maxlength="3" style="text-transform:uppercase">
-
-  <div class="row">
-    <div>
-      <label>Ida</label>
-      <input type="date" id="ida">
+  <!-- FORMULÁRIO -->
+  <div class="card">
+    <div class="row">
+      <div>
+        <label>Origem</label>
+        <input type="text" id="origem" placeholder="GRU" maxlength="3" style="text-transform:uppercase">
+      </div>
+      <div>
+        <label>Destino</label>
+        <input type="text" id="destino" placeholder="LHR" maxlength="3" style="text-transform:uppercase">
+      </div>
     </div>
-    <div>
-      <label>Volta</label>
-      <input type="date" id="volta">
+    <div class="row">
+      <div>
+        <label>Ida</label>
+        <input type="date" id="ida">
+      </div>
+      <div>
+        <label>Volta</label>
+        <input type="date" id="volta">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Adultos</label>
+        <select id="adultos">
+          <option>1</option><option>2</option><option>3</option><option>4</option>
+        </select>
+      </div>
+      <div>
+        <label>Classe</label>
+        <select id="classe">
+          <option value="e">Econômica</option>
+          <option value="b">Executiva</option>
+          <option value="f">Primeira</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-buscar" onclick="buscar()">🚀 Buscar passagens</button>
+  </div>
+
+  <!-- CARTÃO DO DESTINO -->
+  <div class="destino-card" id="destinoCard">
+    <div class="destino-banner" id="destinoBanner">
+      <span id="destinoEmoji"></span>
+      <span class="cidade-nome" id="destinoCidade"></span>
+    </div>
+    <div class="destino-info" id="destinoInfo"></div>
+  </div>
+
+  <!-- MELHORES DIAS -->
+  <div class="card" id="calCard" style="display:none">
+    <div class="cal-title">📅 Melhores dias para voar</div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div style="display:flex;gap:12px;margin-top:10px;font-size:11px;">
+      <span style="color:#5aff5a">🟢 Barato</span>
+      <span style="color:#ffaa00">🟡 Médio</span>
+      <span style="color:#ff6060">🔴 Caro</span>
     </div>
   </div>
 
-  <div class="row">
-    <div>
-      <label>Adultos</label>
-      <select id="adultos">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-      </select>
-    </div>
-    <div>
-      <label>Classe</label>
-      <select id="classe">
-        <option value="e">Econômica</option>
-        <option value="b">Executiva</option>
-        <option value="f">Primeira</option>
-      </select>
-    </div>
+  <!-- SITES -->
+  <div class="section-label">Abrir em</div>
+  <div class="sites-grid" id="sitesGrid">
+    <a class="site-btn" id="btn-google" target="_blank">
+      <span class="site-icon">🌐</span>
+      <span class="site-name">Google Flights</span>
+      <span class="site-status">Clique para abrir</span>
+    </a>
+    <a class="site-btn" id="btn-kayak" target="_blank">
+      <span class="site-icon">🛶</span>
+      <span class="site-name">Kayak</span>
+      <span class="site-status">Clique para abrir</span>
+    </a>
+    <a class="site-btn" id="btn-skyscanner" target="_blank">
+      <span class="site-icon">🌤️</span>
+      <span class="site-name">Skyscanner</span>
+      <span class="site-status">Clique para abrir</span>
+    </a>
+    <a class="site-btn" id="btn-decolar" target="_blank">
+      <span class="site-icon">🌎</span>
+      <span class="site-name">Decolar</span>
+      <span class="site-status">Clique para abrir</span>
+    </a>
+    <a class="site-btn" id="btn-latam" target="_blank">
+      <span class="site-icon">🔴</span>
+      <span class="site-name">LATAM</span>
+      <span class="site-status">Clique para abrir</span>
+    </a>
+    <a class="site-btn" id="btn-gol" target="_blank">
+      <span class="site-icon">🟠</span>
+      <span class="site-name">GOL</span>
+      <span class="site-status">Clique para abrir</span>
+    </a>
   </div>
 
-  <button class="btn-buscar" onclick="buscarTodos()">🔍 Buscar em todos os sites</button>
+  <!-- COMPARADOR -->
+  <div class="card">
+    <h2>💰 Comparador de preços</h2>
+    <p style="font-size:12px;color:#7a8cb0;margin-bottom:12px">Digite os preços que foi achando em cada site:</p>
+    <div class="comparador-lista" id="compLista"></div>
+    <div id="compResultado"></div>
+  </div>
+
+  <!-- ALERTA DE PREÇO -->
+  <div class="card">
+    <h2>🔔 Alerta de preço</h2>
+    <p style="font-size:12px;color:#7a8cb0;margin-bottom:10px">Receba notificação quando encontrar um preço abaixo do teto:</p>
+    <div class="alerta-row">
+      <div>
+        <label>Teto máximo (R$)</label>
+        <input type="number" id="alertaTeto" placeholder="ex: 1500">
+      </div>
+      <button class="btn-alerta" onclick="criarAlerta()">+ Criar alerta</button>
+    </div>
+    <div class="alertas-lista" id="alertasLista"></div>
+  </div>
+
+  <!-- HISTÓRICO -->
+  <div class="card">
+    <h2>🕓 Buscas recentes</h2>
+    <div class="historico-lista" id="historicoLista">
+      <div class="empty-msg">Nenhuma busca ainda</div>
+    </div>
+  </div>
 </div>
 
-<p class="sites-titulo">Ou clique em um site específico</p>
-
-<div class="sites-grid" id="sitesGrid">
-  <a class="site-card" id="link-google" target="_blank">
-    <span class="site-icon">🌐</span>
-    <span class="site-name">Google Flights</span>
-    <span class="site-desc">google.com/flights</span>
-  </a>
-  <a class="site-card" id="link-kayak" target="_blank">
-    <span class="site-icon">🛶</span>
-    <span class="site-name">Kayak</span>
-    <span class="site-desc">kayak.com.br</span>
-  </a>
-  <a class="site-card" id="link-decolar" target="_blank">
-    <span class="site-icon">🌎</span>
-    <span class="site-name">Decolar</span>
-    <span class="site-desc">decolar.com</span>
-  </a>
-  <a class="site-card" id="link-skyscanner" target="_blank">
-    <span class="site-icon">🌤️</span>
-    <span class="site-name">Skyscanner</span>
-    <span class="site-desc">skyscanner.com.br</span>
-  </a>
-  <a class="site-card" id="link-latam" target="_blank">
-    <span class="site-icon">🔴</span>
-    <span class="site-name">LATAM</span>
-    <span class="site-desc">latamairlines.com</span>
-  </a>
-  <a class="site-card" id="link-gol" target="_blank">
-    <span class="site-icon">🟠</span>
-    <span class="site-name">GOL</span>
-    <span class="site-desc">voegol.com.br</span>
-  </a>
-</div>
-
-<p class="aviso">💡 Alguns sites podem bloquear pop-ups. Permita-os no seu navegador para abrir todos de uma vez.</p>
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <script>
-function fmt(dateStr) {
-  return dateStr ? dateStr.replace(/-/g, "") : "";
+// ── DADOS DOS DESTINOS ──────────────────────────────────────────────────────
+const destinosDB = {
+  GRU: { nome: "São Paulo", emoji: "🏙️", moeda: "BRL R$", idioma: "Português", fuso: "UTC-3", temp: "22°C" },
+  CGH: { nome: "São Paulo (Cong.)", emoji: "🏙️", moeda: "BRL R$", idioma: "Português", fuso: "UTC-3", temp: "22°C" },
+  GIG: { nome: "Rio de Janeiro", emoji: "🌴", moeda: "BRL R$", idioma: "Português", fuso: "UTC-3", temp: "27°C" },
+  BSB: { nome: "Brasília", emoji: "🏛️", moeda: "BRL R$", idioma: "Português", fuso: "UTC-3", temp: "24°C" },
+  SSA: { nome: "Salvador", emoji: "🥁", moeda: "BRL R$", idioma: "Português", fuso: "UTC-3", temp: "28°C" },
+  FOR: { nome: "Fortaleza", emoji: "☀️", moeda: "BRL R$", idioma: "Português", fuso: "UTC-3", temp: "30°C" },
+  REC: { nome: "Recife", emoji: "🌊", moeda: "BRL R$", idioma: "Português", fuso: "UTC-3", temp: "29°C" },
+  FLN: { nome: "Florianópolis", emoji: "🏖️", moeda: "BRL R$", idioma: "Português", fuso: "UTC-3", temp: "23°C" },
+  MCZ: { nome: "Maceió", emoji: "🌺", moeda: "BRL R$", idioma: "Português", fuso: "UTC-3", temp: "28°C" },
+  NAT: { nome: "Natal", emoji: "🐠", moeda: "BRL R$", idioma: "Português", fuso: "UTC-3", temp: "28°C" },
+  // Internacional
+  LHR: { nome: "Londres", emoji: "🎡", moeda: "GBP £", idioma: "Inglês", fuso: "UTC+1", temp: "15°C" },
+  LGW: { nome: "Londres Gatwick", emoji: "🎡", moeda: "GBP £", idioma: "Inglês", fuso: "UTC+1", temp: "15°C" },
+  CDG: { nome: "Paris", emoji: "🗼", moeda: "EUR €", idioma: "Francês", fuso: "UTC+2", temp: "18°C" },
+  JFK: { nome: "Nova York", emoji: "🗽", moeda: "USD $", idioma: "Inglês", fuso: "UTC-4", temp: "20°C" },
+  MIA: { nome: "Miami", emoji: "🌴", moeda: "USD $", idioma: "Inglês", fuso: "UTC-4", temp: "30°C" },
+  LAX: { nome: "Los Angeles", emoji: "🎬", moeda: "USD $", idioma: "Inglês", fuso: "UTC-7", temp: "24°C" },
+  ORD: { nome: "Chicago", emoji: "🌬️", moeda: "USD $", idioma: "Inglês", fuso: "UTC-5", temp: "18°C" },
+  MAD: { nome: "Madrid", emoji: "🏟️", moeda: "EUR €", idioma: "Espanhol", fuso: "UTC+2", temp: "22°C" },
+  BCN: { nome: "Barcelona", emoji: "🎨", moeda: "EUR €", idioma: "Catalão/Espanhol", fuso: "UTC+2", temp: "23°C" },
+  FCO: { nome: "Roma", emoji: "🏛️", moeda: "EUR €", idioma: "Italiano", fuso: "UTC+2", temp: "22°C" },
+  MXP: { nome: "Milão", emoji: "👗", moeda: "EUR €", idioma: "Italiano", fuso: "UTC+2", temp: "19°C" },
+  AMS: { nome: "Amsterdã", emoji: "🌷", moeda: "EUR €", idioma: "Holandês", fuso: "UTC+2", temp: "16°C" },
+  FRA: { nome: "Frankfurt", emoji: "🏦", moeda: "EUR €", idioma: "Alemão", fuso: "UTC+2", temp: "17°C" },
+  DXB: { nome: "Dubai", emoji: "🏙️", moeda: "AED د.إ", idioma: "Árabe", fuso: "UTC+4", temp: "35°C" },
+  NRT: { nome: "Tóquio", emoji: "⛩️", moeda: "JPY ¥", idioma: "Japonês", fuso: "UTC+9", temp: "22°C" },
+  GRU_default: { nome: "Destino", emoji: "✈️", moeda: "—", idioma: "—", fuso: "—", temp: "—" }
+};
+
+const SITES = [
+  { id: "google", nome: "Google Flights", icon: "🌐" },
+  { id: "kayak",  nome: "Kayak",          icon: "🛶" },
+  { id: "skyscanner", nome: "Skyscanner", icon: "🌤️" },
+  { id: "decolar", nome: "Decolar",       icon: "🌎" },
+  { id: "latam",  nome: "LATAM",          icon: "🔴" },
+  { id: "gol",    nome: "GOL",            icon: "🟠" },
+];
+
+// ── STATE ───────────────────────────────────────────────────────────────────
+let historico = JSON.parse(localStorage.getItem("hist_passagens")) || [];
+let alertas   = JSON.parse(localStorage.getItem("alertas_passagens")) || [];
+let compPrecos = {};
+
+// ── INIT ────────────────────────────────────────────────────────────────────
+(function init() {
+  const hoje = new Date();
+  const em2 = new Date(hoje); em2.setDate(hoje.getDate() + 14);
+  const em3 = new Date(hoje); em3.setDate(hoje.getDate() + 21);
+  document.getElementById("ida").value   = toISO(em2);
+  document.getElementById("volta").value = toISO(em3);
+
+  renderHistorico();
+  renderAlertas();
+  renderComparador();
+  atualizarLinks();
+
+  ["origem","destino","ida","volta","adultos","classe"].forEach(id => {
+    document.getElementById(id).addEventListener("input",  () => { atualizarLinks(); atualizarDestino(); });
+    document.getElementById(id).addEventListener("change", () => { atualizarLinks(); atualizarDestino(); });
+  });
+
+  // clique nos botões de site com ripple + status
+  SITES.forEach(s => {
+    const btn = document.getElementById("btn-" + s.id);
+    btn.addEventListener("click", e => {
+      criarRipple(btn, e);
+      btn.classList.add("launched");
+      btn.querySelector(".site-status").textContent = "✓ Aberto!";
+      setTimeout(() => {
+        btn.classList.remove("launched");
+        btn.querySelector(".site-status").textContent = "Clique para abrir";
+      }, 3000);
+    });
+  });
+})();
+
+// ── BUSCAR ──────────────────────────────────────────────────────────────────
+function buscar() {
+  const d = getDados();
+  if (!d.origem || !d.destino) { toast("Preencha origem e destino!"); return; }
+
+  atualizarLinks();
+  atualizarDestino();
+  gerarCalendario();
+  salvarHistorico(d);
+
+  // Abre todos de uma vez
+  const urls = gerarURLs(d);
+  Object.values(urls).forEach(url => window.open(url, "_blank"));
+  toast("🚀 " + Object.keys(urls).length + " sites abertos!");
 }
 
+// ── DADOS ───────────────────────────────────────────────────────────────────
 function getDados() {
   return {
-    origem: document.getElementById("origem").value.toUpperCase().trim(),
-    destino: document.getElementById("destino").value.toUpperCase().trim(),
-    ida: document.getElementById("ida").value,
-    volta: document.getElementById("volta").value,
-    adultos: document.getElementById("adultos").value,
-    classe: document.getElementById("classe").value
+    origem:   document.getElementById("origem").value.toUpperCase().trim(),
+    destino:  document.getElementById("destino").value.toUpperCase().trim(),
+    ida:      document.getElementById("ida").value,
+    volta:    document.getElementById("volta").value,
+    adultos:  document.getElementById("adultos").value,
+    classe:   document.getElementById("classe").value
   };
 }
 
+// ── URLs ────────────────────────────────────────────────────────────────────
+function gerarURLs(d) {
+  return {
+    google:     urlGoogle(d),
+    kayak:      urlKayak(d),
+    skyscanner: urlSkyscanner(d),
+    decolar:    urlDecolar(d),
+    latam:      urlLatam(d),
+    gol:        urlGol(d),
+  };
+}
+
+function fmt(s) { return s ? s.replace(/-/g, "") : ""; }
+
 function urlGoogle(d) {
-  const base = "https://www.google.com/travel/flights";
-  if (!d.origem || !d.destino) return base;
-  let url = `${base}/search?tfs=CBwQAhoeEgoyMDI1LTA3LTE5agcIARIDR1JVcgcIARIDTEhSGh4SCjIwMjUtMDgtMDVqBwgBEgNMSFJyBwgBEgNHUlU`;
-  // Fallback para URL simples se sem datas
-  if (d.ida) {
-    url = `https://www.google.com/travel/flights?q=Flights+from+${d.origem}+to+${d.destino}+on+${d.ida}`;
-    if (d.volta) url += `+return+${d.volta}`;
-  } else {
-    url = `https://www.google.com/travel/flights?q=Flights+from+${d.origem}+to+${d.destino}`;
-  }
+  if (!d.origem || !d.destino) return "https://www.google.com/travel/flights";
+  let url = `https://www.google.com/travel/flights?q=Flights+from+${d.origem}+to+${d.destino}`;
+  if (d.ida) url += `+on+${d.ida}`;
+  if (d.volta) url += `+return+${d.volta}`;
   return url;
 }
-
 function urlKayak(d) {
   if (!d.origem || !d.destino) return "https://www.kayak.com.br/flights";
-  const tipo = d.volta ? "flights" : "flights";
-  const rotaV = d.volta ? `/${d.destino}-${d.origem}/${fmt(d.volta)}` : "";
-  return `https://www.kayak.com.br/${tipo}/${d.origem}-${d.destino}/${fmt(d.ida)}${rotaV}/${d.adultos}`;
+  const retorno = d.volta ? `/${d.destino}-${d.origem}/${fmt(d.volta)}` : "";
+  return `https://www.kayak.com.br/flights/${d.origem}-${d.destino}/${fmt(d.ida)}${retorno}/${d.adultos}`;
 }
-
 function urlSkyscanner(d) {
   if (!d.origem || !d.destino) return "https://www.skyscanner.com.br";
-  const volta = d.volta ? fmt(d.volta) : "no";
-  return `https://www.skyscanner.com.br/transporte/voos/${d.origem.toLowerCase()}/${d.destino.toLowerCase()}/${fmt(d.ida)}/${volta}/?adults=${d.adultos}&cabinclass=${d.classe === "e" ? "economy" : d.classe === "b" ? "business" : "first"}`;
+  const v = d.volta ? fmt(d.volta) : "no";
+  const cab = d.classe === "e" ? "economy" : d.classe === "b" ? "business" : "first";
+  return `https://www.skyscanner.com.br/transporte/voos/${d.origem.toLowerCase()}/${d.destino.toLowerCase()}/${fmt(d.ida)}/${v}/?adults=${d.adultos}&cabinclass=${cab}`;
 }
-
 function urlDecolar(d) {
   if (!d.origem || !d.destino) return "https://www.decolar.com/shop/flights";
-  return `https://www.decolar.com/shop/flights/results/${d.volta ? "roundtrip" : "oneway"}/${d.origem}/${d.destino}/${d.ida || ""}/${d.volta || ""}/${d.adultos}/0/0`;
+  const tipo = d.volta ? "roundtrip" : "oneway";
+  return `https://www.decolar.com/shop/flights/results/${tipo}/${d.origem}/${d.destino}/${d.ida || ""}/${d.volta || ""}/${d.adultos}/0/0`;
 }
-
 function urlLatam(d) {
   if (!d.origem || !d.destino) return "https://www.latamairlines.com/br/pt/ofertas-voos";
-  return `https://www.latamairlines.com/br/pt/ofertas-voos?origin=${d.origem}&outbound=${d.ida}&destination=${d.destino}&inbound=${d.volta || ""}&adt=${d.adultos}&chd=0&inf=0&trip=${d.volta ? "RT" : "OW"}&cabin=${d.classe === "e" ? "Economy" : "Business"}`;
+  const cab = d.classe === "e" ? "Economy" : "Business";
+  return `https://www.latamairlines.com/br/pt/ofertas-voos?origin=${d.origem}&outbound=${d.ida}&destination=${d.destino}&inbound=${d.volta||""}&adt=${d.adultos}&chd=0&inf=0&trip=${d.volta?"RT":"OW"}&cabin=${cab}`;
 }
-
 function urlGol(d) {
   if (!d.origem || !d.destino) return "https://www.voegol.com.br";
-  return `https://www.voegol.com.br/pt/voos?from=${d.origem}&to=${d.destino}&departure=${d.ida}&return=${d.volta}&adults=${d.adultos}&type=${d.volta ? "roundtrip" : "oneway"}`;
+  return `https://www.voegol.com.br/pt/voos?from=${d.origem}&to=${d.destino}&departure=${d.ida}&return=${d.volta}&adults=${d.adultos}&type=${d.volta?"roundtrip":"oneway"}`;
 }
 
 function atualizarLinks() {
   const d = getDados();
-  document.getElementById("link-google").href = urlGoogle(d);
-  document.getElementById("link-kayak").href = urlKayak(d);
-  document.getElementById("link-skyscanner").href = urlSkyscanner(d);
-  document.getElementById("link-decolar").href = urlDecolar(d);
-  document.getElementById("link-latam").href = urlLatam(d);
-  document.getElementById("link-gol").href = urlGol(d);
+  const urls = gerarURLs(d);
+  SITES.forEach(s => {
+    document.getElementById("btn-" + s.id).href = urls[s.id];
+  });
 }
 
-function buscarTodos() {
-  const d = getDados();
-  if (!d.origem || !d.destino) {
-    alert("Preencha ao menos a origem e o destino!");
-    return;
+// ── DESTINO CARD ─────────────────────────────────────────────────────────────
+function atualizarDestino() {
+  const dest = document.getElementById("destino").value.toUpperCase().trim();
+  if (dest.length < 3) { document.getElementById("destinoCard").style.display = "none"; return; }
+  const info = destinosDB[dest] || { nome: dest, emoji: "✈️", moeda: "—", idioma: "—", fuso: "—", temp: "—" };
+  document.getElementById("destinoCard").style.display = "block";
+  document.getElementById("destinoEmoji").textContent = info.emoji;
+  document.getElementById("destinoCidade").textContent = info.nome;
+  document.getElementById("destinoInfo").innerHTML = `
+    <div class="info-chip"><span class="ic">💰</span><span class="val">${info.moeda}</span><span class="lbl">Moeda</span></div>
+    <div class="info-chip"><span class="ic">🗣️</span><span class="val" style="font-size:11px">${info.idioma}</span><span class="lbl">Idioma</span></div>
+    <div class="info-chip"><span class="ic">🕐</span><span class="val">${info.fuso}</span><span class="lbl">Fuso horário</span></div>
+    <div class="info-chip"><span class="ic">🌡️</span><span class="val">${info.temp}</span><span class="lbl">Temp. média</span></div>
+    <div class="info-chip"><span class="ic">📍</span><span class="val">${dest}</span><span class="lbl">Código IATA</span></div>
+    <div class="info-chip"><span class="ic">🗓️</span><span class="val">${diasViagem()}</span><span class="lbl">Dias de viagem</span></div>
+  `;
+}
+
+function diasViagem() {
+  const ida   = document.getElementById("ida").value;
+  const volta = document.getElementById("volta").value;
+  if (!ida || !volta) return "—";
+  const diff = (new Date(volta) - new Date(ida)) / (1000*60*60*24);
+  return diff > 0 ? diff + "d" : "—";
+}
+
+// ── CALENDÁRIO ───────────────────────────────────────────────────────────────
+function gerarCalendario() {
+  const idaStr = document.getElementById("ida").value;
+  if (!idaStr) return;
+  document.getElementById("calCard").style.display = "block";
+
+  const base = new Date(idaStr + "T12:00:00");
+  const ano = base.getFullYear(), mes = base.getMonth();
+  const primeiroDia = new Date(ano, mes, 1).getDay();
+  const diasNoMes = new Date(ano, mes + 1, 0).getDate();
+
+  // categorias de dias (seg/qua/qui = barato, sex/sab = caro, resto = médio)
+  const grid = document.getElementById("calGrid");
+  grid.innerHTML = "";
+  ["D","S","T","Q","Q","S","S"].forEach(d => {
+    const h = document.createElement("div");
+    h.className = "cal-day-header"; h.textContent = d; grid.appendChild(h);
+  });
+
+  for (let i = 0; i < primeiroDia; i++) {
+    const v = document.createElement("div"); v.className = "cal-day vazio"; grid.appendChild(v);
   }
-  const urls = [urlGoogle(d), urlKayak(d), urlSkyscanner(d), urlDecolar(d), urlLatam(d), urlGol(d)];
-  urls.forEach(url => window.open(url, "_blank"));
+
+  for (let dia = 1; dia <= diasNoMes; dia++) {
+    const data = new Date(ano, mes, dia);
+    const dow = data.getDay(); // 0=dom, 1=seg...
+    const isIda = data.toISOString().split("T")[0] === idaStr;
+    const voltaStr = document.getElementById("volta").value;
+    const isVolta = voltaStr && data.toISOString().split("T")[0] === voltaStr;
+
+    let cat = "medio";
+    if ([2, 3, 4].includes(dow)) cat = "barato";   // ter, qua, qui
+    else if ([5, 6].includes(dow)) cat = "caro";    // sex, sab
+
+    // adiciona aleatoriedade por dia p/ parecer real
+    const seed = dia * 7 + mes;
+    if (seed % 5 === 0) cat = "barato";
+    if (seed % 7 === 0) cat = "caro";
+
+    const el = document.createElement("div");
+    el.className = "cal-day " + cat + (isIda || isVolta ? " selecionado" : "");
+    const hints = { barato: "💚", medio: "🟡", caro: "🔴" };
+    el.innerHTML = `<span>${dia}</span><span class="price-hint">${hints[cat]}</span>`;
+    grid.appendChild(el);
+  }
 }
 
-// Atualiza links ao digitar
-["origem","destino","ida","volta","adultos","classe"].forEach(id => {
-  document.getElementById(id).addEventListener("input", atualizarLinks);
-  document.getElementById(id).addEventListener("change", atualizarLinks);
-});
-
-// Datas padrão: próximas 2 semanas
-const hoje = new Date();
-const em2semanas = new Date(hoje);
-em2semanas.setDate(hoje.getDate() + 14);
-const em3semanas = new Date(hoje);
-em3semanas.setDate(hoje.getDate() + 21);
-
-function toInput(d) {
-  return d.toISOString().split("T")[0];
+// ── COMPARADOR ───────────────────────────────────────────────────────────────
+function renderComparador() {
+  const lista = document.getElementById("compLista");
+  lista.innerHTML = SITES.map(s => `
+    <div class="comp-row">
+      <span class="site-tag">${s.icon} ${s.nome}</span>
+      <input type="number" placeholder="R$ —" id="comp-${s.id}"
+        oninput="calcComparador()" style="text-align:right">
+    </div>
+  `).join("");
 }
 
-document.getElementById("ida").value = toInput(em2semanas);
-document.getElementById("volta").value = toInput(em3semanas);
+function calcComparador() {
+  const vals = SITES.map(s => ({
+    nome: s.nome,
+    icon: s.icon,
+    val: parseFloat(document.getElementById("comp-" + s.id).value) || 0
+  })).filter(x => x.val > 0);
 
-atualizarLinks();
+  const res = document.getElementById("compResultado");
+  if (vals.length < 2) { res.innerHTML = ""; return; }
+
+  const max = Math.max(...vals.map(v => v.val));
+  const min = Math.min(...vals.map(v => v.val));
+  const vencedor = vals.find(v => v.val === min);
+
+  const cores = ["#4f7cff","#7c5cd8","#5aff5a","#ffaa00","#ff6060","#00c8ff"];
+  const barras = vals.map((v, i) => {
+    const pct = Math.round((v.val / max) * 100);
+    return `
+      <div style="margin-bottom:6px">
+        <div style="font-size:11px;color:#a0a8c0;margin-bottom:2px">${v.icon} ${v.nome} — R$ ${v.val.toFixed(2)}</div>
+        <div class="comp-bar-wrap">
+          <div class="comp-bar" style="width:${pct}%;background:${cores[i % cores.length]}">
+          </div>
+        </div>
+      </div>`;
+  }).join("");
+
+  res.innerHTML = `${barras}<div class="comp-winner">🏆 Mais barato: ${vencedor.icon} ${vencedor.nome} — R$ ${vencedor.val.toFixed(2)}</div>`;
+  verificarAlertas(min);
+}
+
+// ── ALERTAS ───────────────────────────────────────────────────────────────────
+function criarAlerta() {
+  const d = getDados();
+  if (!d.origem || !d.destino) { toast("Preencha origem e destino primeiro!"); return; }
+  const teto = parseFloat(document.getElementById("alertaTeto").value);
+  if (!teto || teto <= 0) { toast("Informe um valor teto!"); return; }
+
+  // Pede permissão de notificação
+  if ("Notification" in window && Notification.permission === "default") {
+    Notification.requestPermission();
+  }
+
+  alertas.push({ origem: d.origem, destino: d.destino, teto, id: Date.now() });
+  localStorage.setItem("alertas_passagens", JSON.stringify(alertas));
+  document.getElementById("alertaTeto").value = "";
+  renderAlertas();
+  toast("🔔 Alerta criado para " + d.origem + " → " + d.destino + " abaixo de R$ " + teto);
+}
+
+function renderAlertas() {
+  const el = document.getElementById("alertasLista");
+  if (!alertas.length) { el.innerHTML = '<div class="empty-msg">Nenhum alerta ativo</div>'; return; }
+  el.innerHTML = alertas.map(a => `
+    <div class="alerta-chip">
+      <span class="rota">✈️ ${a.origem} → ${a.destino}</span>
+      <span class="teto">abaixo de R$ ${a.teto.toFixed(2)}</span>
+      <span class="del" onclick="removerAlerta(${a.id})">✕</span>
+    </div>
+  `).join("");
+}
+
+function removerAlerta(id) {
+  alertas = alertas.filter(a => a.id !== id);
+  localStorage.setItem("alertas_passagens", JSON.stringify(alertas));
+  renderAlertas();
+}
+
+function verificarAlertas(precoAtual) {
+  const d = getDados();
+  alertas.forEach(a => {
+    if (a.origem === d.origem && a.destino === d.destino && precoAtual <= a.teto) {
+      toast("🎉 ALERTA! " + d.origem + "→" + d.destino + " por R$" + precoAtual.toFixed(2) + "!");
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("✈️ Passagem abaixo do teto!", {
+          body: d.origem + " → " + d.destino + " por R$ " + precoAtual.toFixed(2),
+          icon: "https://em-content.zobj.net/source/apple/391/airplane_2708-fe0f.png"
+        });
+      }
+    }
+  });
+}
+
+// ── HISTÓRICO ────────────────────────────────────────────────────────────────
+function salvarHistorico(d) {
+  const item = {
+    origem: d.origem, destino: d.destino,
+    ida: d.ida, volta: d.volta, adultos: d.adultos,
+    ts: new Date().toLocaleDateString("pt-BR")
+  };
+  historico = [item, ...historico.filter(h => !(h.origem === d.origem && h.destino === d.destino))].slice(0, 8);
+  localStorage.setItem("hist_passagens", JSON.stringify(historico));
+  renderHistorico();
+}
+
+function renderHistorico() {
+  const el = document.getElementById("historicoLista");
+  if (!historico.length) { el.innerHTML = '<div class="empty-msg">Nenhuma busca ainda</div>'; return; }
+  el.innerHTML = historico.map((h, i) => `
+    <div class="hist-item" onclick="recarregarBusca(${i})">
+      <div>
+        <span class="hist-rota">✈️ ${h.origem} → ${h.destino}</span>
+        <div class="hist-data">${h.ida || "??"} ${h.volta ? "→ " + h.volta : ""} · ${h.adultos} adulto(s) · ${h.ts}</div>
+      </div>
+      <span class="hist-del" onclick="event.stopPropagation();removerHistorico(${i})">✕</span>
+    </div>
+  `).join("");
+}
+
+function recarregarBusca(i) {
+  const h = historico[i];
+  document.getElementById("origem").value  = h.origem;
+  document.getElementById("destino").value = h.destino;
+  document.getElementById("ida").value     = h.ida || "";
+  document.getElementById("volta").value   = h.volta || "";
+  document.getElementById("adultos").value = h.adultos;
+  atualizarLinks();
+  atualizarDestino();
+  gerarCalendario();
+  toast("🔁 Busca " + h.origem + " → " + h.destino + " carregada!");
+}
+
+function removerHistorico(i) {
+  historico.splice(i, 1);
+  localStorage.setItem("hist_passagens", JSON.stringify(historico));
+  renderHistorico();
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function toISO(d) { return d.toISOString().split("T")[0]; }
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2800);
+}
+
+function criarRipple(btn, e) {
+  const r = document.createElement("span");
+  r.className = "ripple";
+  const rect = btn.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  r.style.width = r.style.height = size + "px";
+  r.style.left = (e.clientX - rect.left - size/2) + "px";
+  r.style.top  = (e.clientY - rect.top  - size/2) + "px";
+  btn.appendChild(r);
+  setTimeout(() => r.remove(), 600);
+}
 </script>
-
 </body>
 </html>
