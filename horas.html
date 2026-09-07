@@ -150,7 +150,7 @@ body {
   color: #ffffff;
   letter-spacing: 1px;
 }
-.timer-horas-decimal {
+.timer-tempo-humano {
   font-size: 13px;
   color: #38bdf8;
   font-weight: 600;
@@ -287,7 +287,7 @@ body {
   font-weight: 600;
 }
 .resumo-valor {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: #1f2937;
   margin-top: 2px;
@@ -331,10 +331,26 @@ input[type="date"]:focus, input[type="number"]:focus, input[type="text"]:focus, 
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-.input-row {
+.tempo-inputs-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+}
+.tempo-campo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tempo-campo input {
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+.tempo-campo span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+  white-space: nowrap;
 }
 
 /* CHECKBOXES DE MODALIDADES */
@@ -779,11 +795,11 @@ input[type="date"]:focus, input[type="number"]:focus, input[type="text"]:focus, 
       </div>
       <div class="timer-display-row">
         <div class="timer-digits" id="timerDisplay">00:00:00</div>
-        <div class="timer-horas-decimal" id="timerDecimal">= 0.0h</div>
+        <div class="timer-tempo-humano" id="timerTempoHumano">= 0 min</div>
       </div>
       <div class="timer-buttons">
         <button type="button" class="btn-timer btn-timer-start" id="btnTimerStart" onclick="toggleTimer()">▶ Iniciar</button>
-        <button type="button" class="btn-timer btn-timer-apply" id="btnTimerApply" onclick="aplicarHorasDoTimer()" title="Preencher horas no formulário">📥 Usar Horas</button>
+        <button type="button" class="btn-timer btn-timer-apply" id="btnTimerApply" onclick="aplicarHorasDoTimer()" title="Preencher tempo no formulário">📥 Usar Tempo</button>
         <button type="button" class="btn-timer btn-timer-reset" onclick="zerarTimer()" title="Zerar timer">🔄</button>
       </div>
     </div>
@@ -791,8 +807,8 @@ input[type="date"]:focus, input[type="number"]:focus, input[type="text"]:focus, 
     <!-- META (TARGET) MENSAL -->
     <div class="meta-box">
       <div class="meta-input-group">
-        <label for="targetInput">🎯 Target Mensal:</label>
-        <input type="number" id="targetInput" step="0.5" min="0" placeholder="Ex: 50">
+        <label for="targetInput">🎯 Target do Mês:</label>
+        <input type="number" id="targetInput" step="1" min="0" placeholder="Ex: 50">
         <button type="button" class="meta-btn-salvar" onclick="salvarTarget()">Salvar Target</button>
       </div>
       <div class="progresso-container" id="progressoContainer" style="display: none;">
@@ -814,7 +830,7 @@ input[type="date"]:focus, input[type="number"]:focus, input[type="text"]:focus, 
       </div>
       <div class="resumo-item destaque">
         <div class="resumo-label">Feito</div>
-        <div class="resumo-valor" id="totalFeito">0h</div>
+        <div class="resumo-valor" id="totalFeito">0 min</div>
       </div>
       <div class="resumo-item restante-positivo" id="cardRestante">
         <div class="resumo-label" id="labelRestante">Faltam</div>
@@ -824,15 +840,22 @@ input[type="date"]:focus, input[type="number"]:focus, input[type="text"]:focus, 
 
     <!-- FORMULÁRIO -->
     <form id="formRegistro" onsubmit="adicionarHoras(event)">
-      <div class="input-row">
-        <div class="form-group">
-          <label for="dataInput">Data</label>
-          <input type="date" id="dataInput" required>
-        </div>
+      <div class="form-group">
+        <label for="dataInput">Data</label>
+        <input type="date" id="dataInput" required>
+      </div>
 
-        <div class="form-group">
-          <label for="horasInput">Horas</label>
-          <input type="number" id="horasInput" step="any" min="0.01" max="24" placeholder="Ex: 2 ou 2.5" required>
+      <div class="form-group">
+        <label>Tempo Trabalhado</label>
+        <div class="tempo-inputs-container">
+          <div class="tempo-campo">
+            <input type="number" id="horasInput" min="0" max="24" placeholder="0">
+            <span>horas</span>
+          </div>
+          <div class="tempo-campo">
+            <input type="number" id="minutosInput" min="0" max="59" placeholder="0">
+            <span>minutos</span>
+          </div>
         </div>
       </div>
 
@@ -883,7 +906,7 @@ input[type="date"]:focus, input[type="number"]:focus, input[type="text"]:focus, 
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary">➕ Adicionar Horas</button>
+      <button type="submit" class="btn btn-primary">➕ Adicionar Tempo</button>
     </form>
 
     <div class="acoes-bar">
@@ -940,7 +963,7 @@ const STORAGE_KEY_TARGET = "horas_de_campo_target";
 const STORAGE_KEY_TIMER = "horas_de_campo_timer_state";
 
 let registros = carregarRegistros();
-let targetHoras = carregarTarget();
+let targetMinutos = carregarTarget();
 let fotoTempBase64 = null;
 
 // ========================
@@ -1019,8 +1042,14 @@ function atualizarDisplayTimer() {
   const ms = getTimerTotalMs();
   document.getElementById("timerDisplay").textContent = formatarTempoTimer(ms);
   
-  const horasDecimais = (ms / (1000 * 60 * 60)).toFixed(1);
-  document.getElementById("timerDecimal").textContent = `= ${horasDecimais}h`;
+  const totalSegundos = Math.floor(ms / 1000);
+  const min = Math.floor(totalSegundos / 60);
+  
+  if (min < 1) {
+    document.getElementById("timerTempoHumano").textContent = `= ${totalSegundos} seg`;
+  } else {
+    document.getElementById("timerTempoHumano").textContent = `= ${formatarMinutosLegivel(min)}`;
+  }
 }
 
 function atualizarUiTimer() {
@@ -1075,21 +1104,24 @@ function restaurarEstadoTimer() {
 
 function aplicarHorasDoTimer() {
   const ms = getTimerTotalMs();
-  if (ms < 5000) {
-    mostrarToast("Inicie o cronômetro antes de usar as horas.");
+  const totalSegundos = Math.floor(ms / 1000);
+  if (totalSegundos < 1) {
+    mostrarToast("Inicie o cronômetro antes de usar o tempo.");
     return;
   }
-  // Se for menos de 6 minutos (< 0.1h), calcula com 2 casas para não arredondar para 0
-  let horasCalculadas = ms / (1000 * 60 * 60);
-  if (horasCalculadas < 0.1) {
-    horasCalculadas = +horasCalculadas.toFixed(2);
-    if (horasCalculadas === 0) horasCalculadas = 0.01;
-  } else {
-    horasCalculadas = +horasCalculadas.toFixed(1);
+  
+  const horas = Math.floor(totalSegundos / 3600);
+  let minutos = Math.floor((totalSegundos % 3600) / 60);
+  
+  // Se rodou alguns segundos mas menos de 1 minuto, põe 1 min para poder registrar
+  if (horas === 0 && minutos === 0 && totalSegundos > 0) {
+    minutos = 1;
   }
   
-  document.getElementById("horasInput").value = horasCalculadas;
-  mostrarToast(`Preenchido: ${horasCalculadas}h no formulário.`);
+  document.getElementById("horasInput").value = horas > 0 ? horas : "";
+  document.getElementById("minutosInput").value = minutos > 0 ? minutos : (horas > 0 ? "" : 0);
+  
+  mostrarToast(`Preenchido: ${horas > 0 ? horas + 'h ' : ''}${minutos} min`);
 }
 
 // ========================
@@ -1103,7 +1135,6 @@ function processarFoto(event) {
   reader.onload = function(e) {
     const img = new Image();
     img.onload = function() {
-      // Redimensionar para no máximo 800px para salvar levemente no localStorage
       const maxDim = 800;
       let width = img.width;
       let height = img.height;
@@ -1124,7 +1155,6 @@ function processarFoto(event) {
       const ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0, width, height);
 
-      // Qualidade JPEG 0.75 para otimizar espaço
       fotoTempBase64 = canvas.toDataURL("image/jpeg", 0.75);
 
       document.getElementById("fotoPreviewImg").src = fotoTempBase64;
@@ -1157,15 +1187,27 @@ function fecharModalFoto() {
 // CARREGAMENTO & PERSISTÊNCIA
 // ========================
 document.getElementById("dataInput").valueAsDate = new Date();
-if (targetHoras > 0) {
-  document.getElementById("targetInput").value = targetHoras;
+if (targetMinutos > 0) {
+  document.getElementById("targetInput").value = Math.round(targetMinutos / 60);
 }
 renderizar();
 
 function carregarRegistros() {
   try {
     const salvo = localStorage.getItem(STORAGE_KEY_REGISTROS);
-    return salvo ? JSON.parse(salvo) : [];
+    if (!salvo) return [];
+    const lista = JSON.parse(salvo);
+    
+    // Migração transparente de registros antigos em formato decimal para minutos
+    return lista.map(item => {
+      if (item.minutos !== undefined) return item;
+      // Era horas decimais antigas
+      const h = Number(item.horas) || 0;
+      return {
+        ...item,
+        minutos: Math.round(h * 60)
+      };
+    });
   } catch (e) {
     console.error("Erro ao carregar registros:", e);
     return [];
@@ -1175,22 +1217,24 @@ function carregarRegistros() {
 function carregarTarget() {
   const salvo = localStorage.getItem(STORAGE_KEY_TARGET);
   const num = parseFloat(salvo);
-  return (!isNaN(num) && num > 0) ? num : 0;
+  if (isNaN(num) || num <= 0) return 0;
+  // Se for valor antigo pequeno (ex: 50h), converte para minutos (50 * 60)
+  return num > 300 ? num : num * 60;
 }
 
 function salvarTarget() {
   const input = document.getElementById("targetInput");
-  const val = parseFloat(input.value);
+  const valHoras = parseFloat(input.value);
 
-  if (isNaN(val) || val <= 0) {
-    targetHoras = 0;
+  if (isNaN(valHoras) || valHoras <= 0) {
+    targetMinutos = 0;
     localStorage.removeItem(STORAGE_KEY_TARGET);
     input.value = "";
     mostrarToast("Target removido.");
   } else {
-    targetHoras = val;
-    localStorage.setItem(STORAGE_KEY_TARGET, targetHoras.toString());
-    mostrarToast("Target salvo: " + formatarHoras(targetHoras));
+    targetMinutos = Math.round(valHoras * 60);
+    localStorage.setItem(STORAGE_KEY_TARGET, targetMinutos.toString());
+    mostrarToast("Target salvo: " + formatarMinutosLegivel(targetMinutos));
   }
   renderizar();
 }
@@ -1200,7 +1244,7 @@ function salvarRegistros() {
     localStorage.setItem(STORAGE_KEY_REGISTROS, JSON.stringify(registros));
   } catch (e) {
     console.error("Erro ao salvar:", e);
-    mostrarToast("Aviso: Memória local cheia! Tente remover algumas fotos antigas.");
+    mostrarToast("Aviso: Memória cheia! Remova algumas fotos antigas.");
   }
   renderizar();
 }
@@ -1215,6 +1259,7 @@ function atualizarEstiloCheckbox(el) {
 
 function limparFormulario() {
   document.getElementById("horasInput").value = "";
+  document.getElementById("minutosInput").value = "";
   document.getElementById("amigosInput").value = "";
   document.getElementById("notaInput").value = "";
   const checkboxes = document.querySelectorAll('input[name="modalidade"]');
@@ -1229,15 +1274,23 @@ function adicionarHoras(event) {
   event.preventDefault();
 
   const dataVal = document.getElementById("dataInput").value;
-  const horasVal = parseFloat(document.getElementById("horasInput").value);
+  const h = parseInt(document.getElementById("horasInput").value) || 0;
+  const m = parseInt(document.getElementById("minutosInput").value) || 0;
+  const totalMins = (h * 60) + m;
+
   const amigosVal = document.getElementById("amigosInput").value.trim();
   const notaVal = document.getElementById("notaInput").value.trim();
   
   const selecionados = Array.from(document.querySelectorAll('input[name="modalidade"]:checked'))
     .map(cb => cb.value);
 
-  if (!dataVal || isNaN(horasVal) || horasVal <= 0) {
-    mostrarToast("Preencha a data e a quantidade de horas.");
+  if (!dataVal) {
+    mostrarToast("Preencha a data.");
+    return;
+  }
+
+  if (totalMins <= 0) {
+    mostrarToast("Informe as horas ou os minutos trabalhados.");
     return;
   }
 
@@ -1249,7 +1302,7 @@ function adicionarHoras(event) {
   const novoRegistro = {
     id: Date.now() + Math.random().toString(36).slice(2, 6),
     data: dataVal,
-    horas: horasVal,
+    minutos: totalMins,
     modalidades: selecionados,
     amigos: amigosVal || null,
     nota: notaVal || null,
@@ -1280,19 +1333,32 @@ function desfazerUltimo() {
 }
 
 function resetarTudo() {
-  if (registros.length === 0 && targetHoras === 0) {
+  if (registros.length === 0 && targetMinutos === 0) {
     mostrarToast("Não há dados para limpar.");
     return;
   }
   if (!confirm("Tem certeza que deseja apagar TODOS os registros, fotos e o target?")) return;
   registros = [];
-  targetHoras = 0;
+  targetMinutos = 0;
   localStorage.removeItem(STORAGE_KEY_REGISTROS);
   localStorage.removeItem(STORAGE_KEY_TARGET);
   document.getElementById("targetInput").value = "";
   limparFormulario();
   renderizar();
   mostrarToast("Todos os registros foram apagados.");
+}
+
+// ========================
+// FORMATAÇÃO LEGÍVEL
+// ========================
+function formatarMinutosLegivel(totalMins) {
+  if (!totalMins || totalMins <= 0) return "0 min";
+  const h = Math.floor(totalMins / 60);
+  const m = Math.round(totalMins % 60);
+
+  if (h > 0 && m > 0) return `${h}h ${m}m`;
+  if (h > 0) return `${h}h`;
+  return `${m} min`;
 }
 
 // ========================
@@ -1304,15 +1370,15 @@ function compartilharWhatsApp() {
     return;
   }
 
-  let totalGeral = 0;
-  const modTotais = {};
+  let totalMinsGeral = 0;
+  const modTotaisMins = {};
 
   registros.forEach(r => {
-    const h = Number(r.horas) || 0;
-    totalGeral += h;
+    const m = Number(r.minutos) || 0;
+    totalMinsGeral += m;
     const mods = normalizarModalidades(r);
-    mods.forEach(m => {
-      modTotais[m] = (modTotais[m] || 0) + (h / mods.length); // rateio se múltiplo
+    mods.forEach(mod => {
+      modTotaisMins[mod] = (modTotaisMins[mod] || 0) + (m / mods.length);
     });
   });
 
@@ -1321,19 +1387,19 @@ function compartilharWhatsApp() {
   const mesFormatado = mesAno.charAt(0).toUpperCase() + mesAno.slice(1);
 
   let texto = `📋 *Relatório de Campo — ${mesFormatado}*\n\n`;
-  texto += `⏱️ *Total Feito:* ${formatarHoras(totalGeral)}`;
-  if (targetHoras > 0) {
-    const faltam = targetHoras - totalGeral;
-    texto += ` / Target: ${formatarHoras(targetHoras)}\n`;
-    if (faltam > 0) texto += `🎯 *Faltam:* ${formatarHoras(faltam)}\n`;
+  texto += `⏱️ *Total Feito:* ${formatarMinutosLegivel(totalMinsGeral)}`;
+  if (targetMinutos > 0) {
+    const faltamMins = targetMinutos - totalMinsGeral;
+    texto += ` / Target: ${formatarMinutosLegivel(targetMinutos)}\n`;
+    if (faltamMins > 0) texto += `🎯 *Faltam:* ${formatarMinutosLegivel(faltamMins)}\n`;
     else texto += `🎉 *Meta Atingida!*\n`;
   } else {
     texto += `\n`;
   }
 
   texto += `\n*Modalidades:*\n`;
-  for (const [mod, horas] of Object.entries(modTotais)) {
-    texto += `• ${mod}: ${formatarHoras(horas)}\n`;
+  for (const [mod, mins] of Object.entries(modTotaisMins)) {
+    texto += `• ${mod}: ${formatarMinutosLegivel(mins)}\n`;
   }
   texto += `\n*Total de Saídas:* ${registros.length}`;
 
@@ -1360,9 +1426,9 @@ function fecharModalBackup() {
 
 function exportarBackup() {
   const dados = {
-    versao: 1,
+    versao: 2,
     dataBackup: new Date().toISOString(),
-    target: targetHoras,
+    targetMinutos: targetMinutos,
     registros: registros
   };
   const jsonStr = JSON.stringify(dados, null, 2);
@@ -1390,10 +1456,13 @@ function importarBackup(event) {
         throw new Error("Formato inválido");
       }
       if (confirm(`Restaurar ${dados.registros.length} registros do backup? Isso substituirá os registros atuais.`)) {
-        registros = dados.registros;
-        if (dados.target) {
-          targetHoras = Number(dados.target) || 0;
-          document.getElementById("targetInput").value = targetHoras || "";
+        registros = dados.registros.map(r => {
+          if (r.minutos !== undefined) return r;
+          return { ...r, minutos: Math.round((Number(r.horas) || 0) * 60) };
+        });
+        if (dados.targetMinutos) {
+          targetMinutos = Number(dados.targetMinutos) || 0;
+          document.getElementById("targetInput").value = Math.round(targetMinutos / 60) || "";
         }
         salvarRegistros();
         salvarTarget();
@@ -1448,36 +1517,36 @@ function renderizar() {
 
   badgeCount.textContent = registros.length;
 
-  let totalFeito = 0;
+  let totalMinsFeito = 0;
   registros.forEach(r => {
-    totalFeito += Number(r.horas) || 0;
+    totalMinsFeito += Number(r.minutos) || 0;
   });
 
-  totalFeitoEl.textContent = formatarHoras(totalFeito);
+  totalFeitoEl.textContent = formatarMinutosLegivel(totalMinsFeito);
 
-  if (targetHoras > 0) {
-    resumoTargetEl.textContent = formatarHoras(targetHoras);
-    const faltam = targetHoras - totalFeito;
+  if (targetMinutos > 0) {
+    resumoTargetEl.textContent = formatarMinutosLegivel(targetMinutos);
+    const faltamMins = targetMinutos - totalMinsFeito;
 
     progressoContainer.style.display = "block";
-    const perc = Math.min(100, Math.round((totalFeito / targetHoras) * 100));
+    const perc = Math.min(100, Math.round((totalMinsFeito / targetMinutos) * 100));
     progressoFill.style.width = perc + "%";
     progressoPorcentagem.textContent = `${perc}% concluído`;
-    progressoDetalhe.textContent = `${formatarHoras(totalFeito)} / ${formatarHoras(targetHoras)}`;
+    progressoDetalhe.textContent = `${formatarMinutosLegivel(totalMinsFeito)} / ${formatarMinutosLegivel(targetMinutos)}`;
 
-    if (faltam > 0) {
+    if (faltamMins > 0) {
       labelRestanteEl.textContent = "Faltam";
-      totalRestanteEl.textContent = formatarHoras(faltam);
+      totalRestanteEl.textContent = formatarMinutosLegivel(faltamMins);
       cardRestante.className = "resumo-item restante-positivo";
       progressoFill.style.backgroundColor = "#2563eb";
-    } else if (faltam === 0) {
+    } else if (faltamMins === 0) {
       labelRestanteEl.textContent = "Meta";
       totalRestanteEl.textContent = "Atingida! 🎉";
       cardRestante.className = "resumo-item restante-concluido";
       progressoFill.style.backgroundColor = "#16a34a";
     } else {
       labelRestanteEl.textContent = "Excedente";
-      totalRestanteEl.textContent = `+${formatarHoras(Math.abs(faltam))} 🎉`;
+      totalRestanteEl.textContent = `+${formatarMinutosLegivel(Math.abs(faltamMins))} 🎉`;
       cardRestante.className = "resumo-item restante-concluido";
       progressoFill.style.backgroundColor = "#16a34a";
     }
@@ -1518,7 +1587,7 @@ function renderizar() {
         <div class="item-info">
           <div class="item-topo">
             <span class="item-data">📅 ${formatarDataBR(r.data)}</span>
-            <span class="item-horas">${r.horas}h</span>
+            <span class="item-horas">${formatarMinutosLegivel(r.minutos)}</span>
           </div>
           <div class="tags-container">
             ${tagsHtml}
@@ -1543,10 +1612,6 @@ function escapeHtml(str) {
     '"': '&quot;',
     "'": '&#39;'
   })[m]);
-}
-
-function formatarHoras(num) {
-  return Number.isInteger(num) ? `${num}h` : `${num.toFixed(1)}h`;
 }
 
 let toastTimer = null;
