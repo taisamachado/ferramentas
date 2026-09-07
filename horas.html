@@ -832,7 +832,7 @@ input[type="date"]:focus, input[type="number"]:focus, input[type="text"]:focus, 
 
         <div class="form-group">
           <label for="horasInput">Horas</label>
-          <input type="number" id="horasInput" step="0.1" min="0.1" max="24" placeholder="Ex: 2 ou 2.5" required>
+          <input type="number" id="horasInput" step="any" min="0.01" max="24" placeholder="Ex: 2 ou 2.5" required>
         </div>
       </div>
 
@@ -1075,11 +1075,19 @@ function restaurarEstadoTimer() {
 
 function aplicarHorasDoTimer() {
   const ms = getTimerTotalMs();
-  if (ms < 60000) {
-    mostrarToast("O cronômetro tem menos de 1 minuto.");
+  if (ms < 5000) {
+    mostrarToast("Inicie o cronômetro antes de usar as horas.");
     return;
   }
-  const horasCalculadas = +(ms / (1000 * 60 * 60)).toFixed(1);
+  // Se for menos de 6 minutos (< 0.1h), calcula com 2 casas para não arredondar para 0
+  let horasCalculadas = ms / (1000 * 60 * 60);
+  if (horasCalculadas < 0.1) {
+    horasCalculadas = +horasCalculadas.toFixed(2);
+    if (horasCalculadas === 0) horasCalculadas = 0.01;
+  } else {
+    horasCalculadas = +horasCalculadas.toFixed(1);
+  }
+  
   document.getElementById("horasInput").value = horasCalculadas;
   mostrarToast(`Preenchido: ${horasCalculadas}h no formulário.`);
 }
