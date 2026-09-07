@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Horas de Campo</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #f0f2f5;
+  color: #1f2937;
+  padding: 24px 16px;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.voltar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #4b5563;
+  text-decoration: none;
+  font-size: 14px;
+  margin-bottom: 16px;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+.voltar-link:hover {
+  color: #111827;
+}
+
+/* CARD PRINCIPAL */
+.card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+}
+
+.header-title {
+  text-align: center;
+  margin-bottom: 18px;
+}
+.header-title h1 {
+  font-size: 22px;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.header-title p {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* SEÇÃO DE META (TARGET) */
+.meta-box {
+  background: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+.meta-input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.meta-input-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+}
+.meta-input-group input {
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  width: 90px;
+  text-align: center;
+}
+.meta-btn-salvar {
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #475569;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.meta-btn-salvar:hover {
+  background: #334155;
+}
+
+/* BARRA DE PROGRESSO */
+.progresso-container {
+  margin-top: 10px;
+}
+.progresso-barra-bg {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progresso-barra-fill {
+  height: 100%;
+  background: #2563eb;
+  width: 0%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+.progresso-texto {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* RESUMO / MÉTRICAS */
+.resumo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.resumo-item {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+}
+.resumo-item.destaque {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+.resumo-item.restante-positivo {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+.resumo-item.restante-concluido {
+  background: #fdf2f8;
+  border-color: #fbcfe8;
+}
+
+.resumo-label {
+  font-size: 11px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+.resumo-valor {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-top: 2px;
+}
+.resumo-item.destaque .resumo-valor {
+  color: #1d4ed8;
+}
+.resumo-item.restante-positivo .resumo-valor {
+  color: #16a34a;
+}
+.resumo-item.restante-concluido .resumo-valor {
+  color: #db2777;
+}
+
+/* FORMULÁRIO */
+.form-group {
+  margin-bottom: 14px;
+}
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+input[type="date"], input[type="number"] {
+  width: 100%;
+  padding: 11px 12px;
+  font-size: 15px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  color: #111827;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+input[type="date"]:focus, input[type="number"]:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* CHECKBOXES DE MODALIDADES (MÚLTIPLA ESCOLHA) */
+.modalidades-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.checkbox-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.15s ease;
+}
+
+.checkbox-btn input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+.checkbox-btn:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.checkbox-btn.selecionado {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.05s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.btn:active {
+  transform: scale(0.99);
+}
+.btn-primary {
+  background: #2563eb;
+  color: white;
+  margin-top: 16px;
+}
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.acoes-secundarias {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.btn-desfazer {
+  background: #f59e0b;
+  color: white;
+}
+.btn-desfazer:hover {
+  background: #d97706;
+}
+
+.btn-reset {
+  background: #ef4444;
+  color: white;
+}
+.btn-reset:hover {
+  background: #dc2626;
+}
+
+/* LISTA DE REGISTROS */
+.secao-lista {
+  margin-top: 24px;
+}
+.secao-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.secao-titulo {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+.badge-count {
+  background: #e5e7eb;
+  color: #374151;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.lista-horas {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.item-registro {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.item-topo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.item-data {
+  font-weight: 600;
+  font-size: 14px;
+  color: #111827;
+}
+.item-horas {
+  font-size: 14px;
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.item-modalidade {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+/* CORES DAS TAGS POR MODALIDADE */
+.tag-casa-em-casa {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.tag-cartas {
+  background: #fef3c7;
+  color: #92400e;
+}
+.tag-carrinho {
+  background: #d1fae5;
+  color: #065f46;
+}
+.tag-estudo {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+.tag-outra {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.btn-remover {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s;
+}
+.btn-remover:hover {
+  color: #ef4444;
+  background: #fee2e2;
+}
+
+.lista-vazia {
+  text-align: center;
+  padding: 24px;
+  color: #9ca3af;
+  font-size: 14px;
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 10px;
+}
+
+/* Feedback toast */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #111827;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  opacity: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  z-index: 1000;
+}
+.toast.visivel {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <a href="index.html" class="voltar-link">← Voltar às Ferramentas</a>
+
+  <div class="card">
+    <div class="header-title">
+      <h1>⏱️ Horas de Campo</h1>
+      <p>Controle de horas trabalhadas e meta mensal</p>
+    </div>
+
+    <!-- META (TARGET) MENSAL -->
+    <div class="meta-box">
+      <div class="meta-input-group">
+        <label for="targetInput">🎯 Target Mensal:</label>
+        <input type="number" id="targetInput" step="0.5" min="0" placeholder="Ex: 50">
+        <button type="button" class="meta-btn-salvar" onclick="salvarTarget()">Salvar Target</button>
+      </div>
+      <div class="progresso-container" id="progressoContainer" style="display: none;">
+        <div class="progresso-barra-bg">
+          <div class="progresso-barra-fill" id="progressoFill"></div>
+        </div>
+        <div class="progresso-texto">
+          <span id="progressoPorcentagem">0% concluído</span>
+          <span id="progressoDetalhe">0h / 0h</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESUMO -->
+    <div class="resumo-grid">
+      <div class="resumo-item">
+        <div class="resumo-label">Target</div>
+        <div class="resumo-valor" id="resumoTarget">--</div>
+      </div>
+      <div class="resumo-item destaque">
+        <div class="resumo-label">Feito</div>
+        <div class="resumo-valor" id="totalFeito">0h</div>
+      </div>
+      <div class="resumo-item restante-positivo" id="cardRestante">
+        <div class="resumo-label" id="labelRestante">Faltam</div>
+        <div class="resumo-valor" id="totalRestante">--</div>
+      </div>
+    </div>
+
+    <!-- FORMULÁRIO -->
+    <form id="formRegistro" onsubmit="adicionarHoras(event)">
+      <div class="form-group">
+        <label for="dataInput">Data</label>
+        <input type="date" id="dataInput" required>
+      </div>
+
+      <div class="form-group">
+        <label for="horasInput">Horas Trabalhadas</label>
+        <input type="number" id="horasInput" step="0.5" min="0.5" max="24" placeholder="Ex: 2 ou 2.5" required>
+      </div>
+
+      <div class="form-group">
+        <label>Modalidades no dia (selecione uma ou mais)</label>
+        <div class="modalidades-grid">
+          <label class="checkbox-btn" id="lbl-casa">
+            <input type="checkbox" name="modalidade" value="Casa em casa" onchange="atualizarEstiloCheckbox(this)">
+            <span>🏠 Casa em casa</span>
+          </label>
+          <label class="checkbox-btn" id="lbl-cartas">
+            <input type="checkbox" name="modalidade" value="Cartas" onchange="atualizarEstiloCheckbox(this)">
+            <span>✉️ Cartas</span>
+          </label>
+          <label class="checkbox-btn" id="lbl-carrinho">
+            <input type="checkbox" name="modalidade" value="Carrinho" onchange="atualizarEstiloCheckbox(this)">
+            <span>🛒 Carrinho</span>
+          </label>
+          <label class="checkbox-btn" id="lbl-estudo">
+            <input type="checkbox" name="modalidade" value="Estudo" onchange="atualizarEstiloCheckbox(this)">
+            <span>📖 Estudo</span>
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">➕ Adicionar Horas</button>
+    </form>
+
+    <div class="acoes-secundarias">
+      <button class="btn btn-desfazer" onclick="desfazerUltimo()">↩ Desfazer Último</button>
+      <button class="btn btn-reset" onclick="resetarTudo()">🗑️ Limpar Tudo</button>
+    </div>
+
+    <!-- LISTA DE REGISTROS -->
+    <div class="secao-lista">
+      <div class="secao-header">
+        <span class="secao-titulo">Registros</span>
+        <span class="badge-count" id="badgeCount">0</span>
+      </div>
+
+      <ul class="lista-horas" id="listaHoras"></ul>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY_REGISTROS = "horas_de_campo_registros";
+const STORAGE_KEY_TARGET = "horas_de_campo_target";
+
+let registros = carregarRegistros();
+let targetHoras = carregarTarget();
+
+// Inicializa a data atual no input
+document.getElementById("dataInput").valueAsDate = new Date();
+if (targetHoras > 0) {
+  document.getElementById("targetInput").value = targetHoras;
+}
+renderizar();
+
+function carregarRegistros() {
+  try {
+    const salvo = localStorage.getItem(STORAGE_KEY_REGISTROS);
+    return salvo ? JSON.parse(salvo) : [];
+  } catch (e) {
+    console.error("Erro ao carregar registros:", e);
+    return [];
+  }
+}
+
+function carregarTarget() {
+  const salvo = localStorage.getItem(STORAGE_KEY_TARGET);
+  const num = parseFloat(salvo);
+  return (!isNaN(num) && num > 0) ? num : 0;
+}
+
+function salvarTarget() {
+  const input = document.getElementById("targetInput");
+  const val = parseFloat(input.value);
+
+  if (isNaN(val) || val <= 0) {
+    targetHoras = 0;
+    localStorage.removeItem(STORAGE_KEY_TARGET);
+    input.value = "";
+    mostrarToast("Target removido.");
+  } else {
+    targetHoras = val;
+    localStorage.setItem(STORAGE_KEY_TARGET, targetHoras.toString());
+    mostrarToast("Target salvo: " + formatarHoras(targetHoras));
+  }
+  renderizar();
+}
+
+function salvarRegistros() {
+  try {
+    localStorage.setItem(STORAGE_KEY_REGISTROS, JSON.stringify(registros));
+  } catch (e) {
+    console.error("Erro ao salvar:", e);
+  }
+  renderizar();
+}
+
+function atualizarEstiloCheckbox(el) {
+  if (el.checked) {
+    el.parentElement.classList.add("selecionado");
+  } else {
+    el.parentElement.classList.remove("selecionado");
+  }
+}
+
+function limparModalidades() {
+  const checkboxes = document.querySelectorAll('input[name="modalidade"]');
+  checkboxes.forEach(cb => {
+    cb.checked = false;
+    cb.parentElement.classList.remove("selecionado");
+  });
+}
+
+function adicionarHoras(event) {
+  event.preventDefault();
+
+  const dataVal = document.getElementById("dataInput").value;
+  const horasVal = parseFloat(document.getElementById("horasInput").value);
+  
+  const selecionados = Array.from(document.querySelectorAll('input[name="modalidade"]:checked'))
+    .map(cb => cb.value);
+
+  if (!dataVal || isNaN(horasVal) || horasVal <= 0) {
+    mostrarToast("Preencha a data e a quantidade de horas.");
+    return;
+  }
+
+  if (selecionados.length === 0) {
+    mostrarToast("Selecione pelo menos uma modalidade.");
+    return;
+  }
+
+  const novoRegistro = {
+    id: Date.now() + Math.random().toString(36).slice(2, 6),
+    data: dataVal,
+    horas: horasVal,
+    modalidades: selecionados,
+    criadoEm: new Date().toISOString()
+  };
+
+  registros.unshift(novoRegistro);
+  salvarRegistros();
+
+  document.getElementById("horasInput").value = "";
+  limparModalidades();
+  mostrarToast("Registro adicionado com sucesso!");
+}
+
+function removerRegistro(id) {
+  registros = registros.filter(r => r.id !== id);
+  salvarRegistros();
+  mostrarToast("Registro removido.");
+}
+
+function desfazerUltimo() {
+  if (registros.length === 0) {
+    mostrarToast("Nenhum registro para desfazer.");
+    return;
+  }
+  registros.shift();
+  salvarRegistros();
+  mostrarToast("Último registro desfeito.");
+}
+
+function resetarTudo() {
+  if (registros.length === 0 && targetHoras === 0) {
+    mostrarToast("Não há dados para limpar.");
+    return;
+  }
+  if (!confirm("Tem certeza que deseja apagar todos os registros e o target?")) return;
+  registros = [];
+  targetHoras = 0;
+  localStorage.removeItem(STORAGE_KEY_REGISTROS);
+  localStorage.removeItem(STORAGE_KEY_TARGET);
+  document.getElementById("targetInput").value = "";
+  limparModalidades();
+  renderizar();
+  mostrarToast("Todos os registros foram apagados.");
+}
+
+function formatarDataBR(dataIso) {
+  if (!dataIso) return "";
+  const [ano, mes, dia] = dataIso.split("-");
+  return `${dia}/${mes}/${ano}`;
+}
+
+function tagClassModalidade(mod) {
+  switch (mod) {
+    case "Casa em casa": return "tag-casa-em-casa";
+    case "Cartas": return "tag-cartas";
+    case "Carrinho": return "tag-carrinho";
+    case "Estudo": return "tag-estudo";
+    default: return "tag-outra";
+  }
+}
+
+function normalizarModalidades(reg) {
+  if (Array.isArray(reg.modalidades)) {
+    return reg.modalidades;
+  }
+  if (reg.modalidade) {
+    return [reg.modalidade];
+  }
+  return [];
+}
+
+function renderizar() {
+  const listaEl = document.getElementById("listaHoras");
+  const badgeCount = document.getElementById("badgeCount");
+  const resumoTargetEl = document.getElementById("resumoTarget");
+  const totalFeitoEl = document.getElementById("totalFeito");
+  const totalRestanteEl = document.getElementById("totalRestante");
+  const labelRestanteEl = document.getElementById("labelRestante");
+  const cardRestante = document.getElementById("cardRestante");
+
+  const progressoContainer = document.getElementById("progressoContainer");
+  const progressoFill = document.getElementById("progressoFill");
+  const progressoPorcentagem = document.getElementById("progressoPorcentagem");
+  const progressoDetalhe = document.getElementById("progressoDetalhe");
+
+  badgeCount.textContent = registros.length;
+
+  let totalFeito = 0;
+  registros.forEach(r => {
+    totalFeito += Number(r.horas) || 0;
+  });
+
+  totalFeitoEl.textContent = formatarHoras(totalFeito);
+
+  if (targetHoras > 0) {
+    resumoTargetEl.textContent = formatarHoras(targetHoras);
+    const faltam = targetHoras - totalFeito;
+
+    progressoContainer.style.display = "block";
+    const perc = Math.min(100, Math.round((totalFeito / targetHoras) * 100));
+    progressoFill.style.width = perc + "%";
+    progressoPorcentagem.textContent = `${perc}% concluído`;
+    progressoDetalhe.textContent = `${formatarHoras(totalFeito)} / ${formatarHoras(targetHoras)}`;
+
+    if (faltam > 0) {
+      labelRestanteEl.textContent = "Faltam";
+      totalRestanteEl.textContent = formatarHoras(faltam);
+      cardRestante.className = "resumo-item restante-positivo";
+      progressoFill.style.backgroundColor = "#2563eb";
+    } else if (faltam === 0) {
+      labelRestanteEl.textContent = "Meta";
+      totalRestanteEl.textContent = "Atingida! 🎉";
+      cardRestante.className = "resumo-item restante-concluido";
+      progressoFill.style.backgroundColor = "#16a34a";
+    } else {
+      labelRestanteEl.textContent = "Excedente";
+      totalRestanteEl.textContent = `+${formatarHoras(Math.abs(faltam))} 🎉`;
+      cardRestante.className = "resumo-item restante-concluido";
+      progressoFill.style.backgroundColor = "#16a34a";
+    }
+  } else {
+    resumoTargetEl.textContent = "--";
+    labelRestanteEl.textContent = "Faltam";
+    totalRestanteEl.textContent = "--";
+    cardRestante.className = "resumo-item";
+    progressoContainer.style.display = "none";
+  }
+
+  if (registros.length === 0) {
+    listaEl.innerHTML = `<li class="lista-vazia">Nenhum registro de horas adicionado ainda.</li>`;
+    return;
+  }
+
+  listaEl.innerHTML = registros.map(r => {
+    const listaMods = normalizarModalidades(r);
+    const tagsHtml = listaMods.map(m => `
+      <span class="item-modalidade ${tagClassModalidade(m)}">${m}</span>
+    `).join("");
+
+    return `
+      <li class="item-registro">
+        <div class="item-info">
+          <div class="item-topo">
+            <span class="item-data">📅 ${formatarDataBR(r.data)}</span>
+            <span class="item-horas">${r.horas}h</span>
+          </div>
+          <div class="tags-container">
+            ${tagsHtml}
+          </div>
+        </div>
+        <button type="button" class="btn-remover" title="Remover este registro" onclick="removerRegistro('${r.id}')">
+          🗑️
+        </button>
+      </li>
+    `;
+  }).join("");
+}
+
+function formatarHoras(num) {
+  return Number.isInteger(num) ? `${num}h` : `${num.toFixed(1)}h`;
+}
+
+let toastTimer = null;
+function mostrarToast(msg) {
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.classList.add("visivel");
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove("visivel");
+  }, 2200);
+}
+</script>
+
+</body>
+</html>
