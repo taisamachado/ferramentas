@@ -21,8 +21,15 @@ body {
 }
 
 .container {
-  max-width: 480px;
+  max-width: 490px;
   margin: 0 auto;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
 .voltar-link {
@@ -32,12 +39,30 @@ body {
   color: #4b5563;
   text-decoration: none;
   font-size: 14px;
-  margin-bottom: 16px;
   font-weight: 500;
   transition: color 0.15s;
 }
 .voltar-link:hover {
   color: #111827;
+}
+
+.btn-header-action {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+}
+.btn-header-action:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
 }
 
 /* CARD PRINCIPAL */
@@ -51,7 +76,7 @@ body {
 
 .header-title {
   text-align: center;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 .header-title h1 {
   font-size: 22px;
@@ -66,6 +91,97 @@ body {
   color: #6b7280;
   margin-top: 4px;
 }
+
+/* CRONÔMETRO / TIMER */
+.timer-card {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  color: #f8fafc;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+}
+.timer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+.timer-status-badge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.timer-status-parado {
+  background: rgba(148, 163, 184, 0.2);
+  color: #cbd5e1;
+}
+.timer-status-rodando {
+  background: rgba(34, 197, 94, 0.25);
+  color: #4ade80;
+  animation: pulse 1.8s infinite;
+}
+.timer-status-pausado {
+  background: rgba(245, 158, 11, 0.25);
+  color: #fbbf24;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.timer-display-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 6px 0 10px 0;
+}
+.timer-digits {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+.timer-horas-decimal {
+  font-size: 13px;
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.timer-buttons {
+  display: flex;
+  gap: 8px;
+}
+.btn-timer {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: all 0.15s;
+}
+.btn-timer-start { background: #22c55e; color: #fff; }
+.btn-timer-start:hover { background: #16a34a; }
+.btn-timer-pause { background: #f59e0b; color: #fff; }
+.btn-timer-pause:hover { background: #d97706; }
+.btn-timer-apply { background: #0ea5e9; color: #fff; }
+.btn-timer-apply:hover { background: #0284c7; }
+.btn-timer-reset { background: rgba(255,255,255,0.15); color: #e2e8f0; }
+.btn-timer-reset:hover { background: rgba(255,255,255,0.25); }
 
 /* SEÇÃO DE META (TARGET) */
 .meta-box {
@@ -198,23 +314,30 @@ body {
   margin-bottom: 6px;
 }
 
-input[type="date"], input[type="number"] {
+input[type="date"], input[type="number"], input[type="text"], textarea {
   width: 100%;
-  padding: 11px 12px;
-  font-size: 15px;
+  padding: 10px 12px;
+  font-size: 14.5px;
   border: 1.5px solid #d1d5db;
   border-radius: 8px;
   background: #fff;
   color: #111827;
+  font-family: inherit;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-input[type="date"]:focus, input[type="number"]:focus {
+input[type="date"]:focus, input[type="number"]:focus, input[type="text"]:focus, textarea:focus {
   outline: none;
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-/* CHECKBOXES DE MODALIDADES (MÚLTIPLA ESCOLHA) */
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* CHECKBOXES DE MODALIDADES */
 .modalidades-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -226,21 +349,21 @@ input[type="date"]:focus, input[type="number"]:focus {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 12px;
+  padding: 9px 11px;
   background: #f9fafb;
   border: 1.5px solid #e5e7eb;
   border-radius: 8px;
   cursor: pointer;
   user-select: none;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 500;
   color: #374151;
   transition: all 0.15s ease;
 }
 
 .checkbox-btn input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   accent-color: #2563eb;
   cursor: pointer;
 }
@@ -255,6 +378,63 @@ input[type="date"]:focus, input[type="number"]:focus {
   border-color: #3b82f6;
   color: #1d4ed8;
   font-weight: 600;
+}
+
+/* ANEXO DE FOTO / MEMÓRIAS */
+.upload-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.btn-upload-foto {
+  padding: 8px 12px;
+  background: #f3f4f6;
+  border: 1.5px dashed #9ca3af;
+  border-radius: 8px;
+  color: #4b5563;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+.btn-upload-foto:hover {
+  background: #e5e7eb;
+  border-color: #6b7280;
+  color: #111827;
+}
+.foto-preview-container {
+  display: none;
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #3b82f6;
+}
+.foto-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.btn-remove-preview {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  font-size: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn {
@@ -277,33 +457,32 @@ input[type="date"]:focus, input[type="number"]:focus {
 .btn-primary {
   background: #2563eb;
   color: white;
-  margin-top: 16px;
+  margin-top: 14px;
 }
 .btn-primary:hover {
   background: #1d4ed8;
 }
 
-.acoes-secundarias {
+/* BOTÕES DE AÇÕES E COMPARTILHAR */
+.acoes-bar {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
-
+.btn-share {
+  background: #10b981;
+  color: white;
+}
+.btn-share:hover {
+  background: #059669;
+}
 .btn-desfazer {
   background: #f59e0b;
   color: white;
 }
 .btn-desfazer:hover {
   background: #d97706;
-}
-
-.btn-reset {
-  background: #ef4444;
-  color: white;
-}
-.btn-reset:hover {
-  background: #dc2626;
 }
 
 /* LISTA DE REGISTROS */
@@ -334,8 +513,8 @@ input[type="date"]:focus, input[type="number"]:focus {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 380px;
+  gap: 10px;
+  max-height: 480px;
   overflow-y: auto;
   padding-right: 2px;
 }
@@ -343,32 +522,51 @@ input[type="date"]:focus, input[type="number"]:focus {
 .item-registro {
   background: #f9fafb;
   border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  padding: 10px 12px;
+  border-radius: 12px;
+  padding: 12px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
+  gap: 12px;
+  align-items: flex-start;
+  transition: background 0.15s;
+}
+.item-registro:hover {
+  background: #f8fafc;
+}
+
+.item-thumbnail {
+  width: 58px;
+  height: 58px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  cursor: pointer;
+  border: 1px solid #d1d5db;
+  transition: transform 0.15s;
+}
+.item-thumbnail:hover {
+  transform: scale(1.05);
 }
 
 .item-info {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 .item-topo {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
 }
 .item-data {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
   color: #111827;
 }
 .item-horas {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 800;
   color: #2563eb;
 }
 
@@ -382,31 +580,37 @@ input[type="date"]:focus, input[type="number"]:focus {
   display: inline-block;
   font-size: 11px;
   font-weight: 600;
-  padding: 2px 8px;
+  padding: 2px 7px;
   border-radius: 6px;
   width: fit-content;
 }
 
-/* CORES DAS TAGS POR MODALIDADE */
-.tag-casa-em-casa {
-  background: #dbeafe;
-  color: #1e40af;
+.tag-casa-em-casa { background: #dbeafe; color: #1e40af; }
+.tag-cartas { background: #fef3c7; color: #92400e; }
+.tag-carrinho { background: #d1fae5; color: #065f46; }
+.tag-estudo { background: #ede9fe; color: #5b21b6; }
+.tag-outra { background: #f3f4f6; color: #374151; }
+
+.item-amigos {
+  font-size: 12px;
+  color: #4b5563;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
-.tag-cartas {
-  background: #fef3c7;
-  color: #92400e;
+.item-amigos strong {
+  color: #1f2937;
 }
-.tag-carrinho {
-  background: #d1fae5;
-  color: #065f46;
-}
-.tag-estudo {
-  background: #ede9fe;
-  color: #5b21b6;
-}
-.tag-outra {
-  background: #f3f4f6;
-  color: #374151;
+
+.item-nota {
+  font-size: 12px;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-top: 2px;
+  font-style: italic;
+  word-break: break-word;
 }
 
 .btn-remover {
@@ -414,12 +618,10 @@ input[type="date"]:focus, input[type="number"]:focus {
   border: none;
   color: #9ca3af;
   cursor: pointer;
-  padding: 6px;
+  padding: 4px 6px;
   border-radius: 6px;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 15px;
+  align-self: flex-start;
   transition: color 0.15s, background 0.15s;
 }
 .btn-remover:hover {
@@ -437,7 +639,99 @@ input[type="date"]:focus, input[type="number"]:focus {
   border-radius: 10px;
 }
 
-/* Feedback toast */
+/* MODAL FOTO GRANDE */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 20px;
+}
+.modal-foto-box {
+  position: relative;
+  max-width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.modal-foto-img {
+  max-width: 100%;
+  max-height: 75vh;
+  border-radius: 12px;
+  object-fit: contain;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+.modal-foto-legenda {
+  color: #f8fafc;
+  font-size: 14px;
+  margin-top: 10px;
+  text-align: center;
+}
+.btn-fechar-modal {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  background: #ffffff;
+  color: #111827;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* MODAL BACKUP / IMPORTAR */
+.modal-backup-card {
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.modal-backup-card h3 {
+  font-size: 17px;
+  margin-bottom: 8px;
+  color: #111827;
+}
+.modal-backup-card p {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+.backup-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.btn-export {
+  background: #2563eb;
+  color: white;
+}
+.btn-import-label {
+  background: #4b5563;
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: block;
+}
+.btn-cancelar {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Toast */
 .toast {
   position: fixed;
   bottom: 20px;
@@ -450,7 +744,8 @@ input[type="date"]:focus, input[type="number"]:focus {
   font-size: 13px;
   opacity: 0;
   transition: transform 0.2s ease, opacity 0.2s ease;
-  z-index: 1000;
+  z-index: 3000;
+  pointer-events: none;
 }
 .toast.visivel {
   transform: translateX(-50%) translateY(0);
@@ -462,12 +757,35 @@ input[type="date"]:focus, input[type="number"]:focus {
 <body>
 
 <div class="container">
-  <a href="index.html" class="voltar-link">← Voltar às Ferramentas</a>
+  <div class="top-bar">
+    <a href="index.html" class="voltar-link">← Voltar</a>
+    <div style="display: flex; gap: 8px;">
+      <button class="btn-header-action" onclick="abrirModalBackup()">💾 Backup</button>
+      <button class="btn-header-action" onclick="resetarTudo()" style="color: #ef4444;" title="Limpar tudo">🗑️</button>
+    </div>
+  </div>
 
   <div class="card">
     <div class="header-title">
       <h1>⏱️ Horas de Campo</h1>
-      <p>Controle de horas trabalhadas e meta mensal</p>
+      <p>Controle de horas, memórias e meta mensal</p>
+    </div>
+
+    <!-- CRONÔMETRO / TIMER -->
+    <div class="timer-card">
+      <div class="timer-header">
+        <span>⏱️ Cronômetro de Campo</span>
+        <span class="timer-status-badge timer-status-parado" id="timerBadge">Parado</span>
+      </div>
+      <div class="timer-display-row">
+        <div class="timer-digits" id="timerDisplay">00:00:00</div>
+        <div class="timer-horas-decimal" id="timerDecimal">= 0.0h</div>
+      </div>
+      <div class="timer-buttons">
+        <button type="button" class="btn-timer btn-timer-start" id="btnTimerStart" onclick="toggleTimer()">▶ Iniciar</button>
+        <button type="button" class="btn-timer btn-timer-apply" id="btnTimerApply" onclick="aplicarHorasDoTimer()" title="Preencher horas no formulário">📥 Usar Horas</button>
+        <button type="button" class="btn-timer btn-timer-reset" onclick="zerarTimer()" title="Zerar timer">🔄</button>
+      </div>
     </div>
 
     <!-- META (TARGET) MENSAL -->
@@ -506,50 +824,77 @@ input[type="date"]:focus, input[type="number"]:focus {
 
     <!-- FORMULÁRIO -->
     <form id="formRegistro" onsubmit="adicionarHoras(event)">
-      <div class="form-group">
-        <label for="dataInput">Data</label>
-        <input type="date" id="dataInput" required>
-      </div>
+      <div class="input-row">
+        <div class="form-group">
+          <label for="dataInput">Data</label>
+          <input type="date" id="dataInput" required>
+        </div>
 
-      <div class="form-group">
-        <label for="horasInput">Horas Trabalhadas</label>
-        <input type="number" id="horasInput" step="0.5" min="0.5" max="24" placeholder="Ex: 2 ou 2.5" required>
+        <div class="form-group">
+          <label for="horasInput">Horas</label>
+          <input type="number" id="horasInput" step="0.1" min="0.1" max="24" placeholder="Ex: 2 ou 2.5" required>
+        </div>
       </div>
 
       <div class="form-group">
         <label>Modalidades no dia (selecione uma ou mais)</label>
         <div class="modalidades-grid">
-          <label class="checkbox-btn" id="lbl-casa">
+          <label class="checkbox-btn">
             <input type="checkbox" name="modalidade" value="Casa em casa" onchange="atualizarEstiloCheckbox(this)">
             <span>🏠 Casa em casa</span>
           </label>
-          <label class="checkbox-btn" id="lbl-cartas">
+          <label class="checkbox-btn">
             <input type="checkbox" name="modalidade" value="Cartas" onchange="atualizarEstiloCheckbox(this)">
             <span>✉️ Cartas</span>
           </label>
-          <label class="checkbox-btn" id="lbl-carrinho">
+          <label class="checkbox-btn">
             <input type="checkbox" name="modalidade" value="Carrinho" onchange="atualizarEstiloCheckbox(this)">
             <span>🛒 Carrinho</span>
           </label>
-          <label class="checkbox-btn" id="lbl-estudo">
+          <label class="checkbox-btn">
             <input type="checkbox" name="modalidade" value="Estudo" onchange="atualizarEstiloCheckbox(this)">
             <span>📖 Estudo</span>
           </label>
         </div>
       </div>
 
+      <!-- MEMÓRIAS & AMIGOS -->
+      <div class="form-group">
+        <label for="amigosInput">👥 Com quem você esteve? (opcional)</label>
+        <input type="text" id="amigosInput" placeholder="Ex: Maria, Ana, João...">
+      </div>
+
+      <div class="form-group">
+        <label for="notaInput">📝 Nota / Experiência marcante (opcional)</label>
+        <input type="text" id="notaInput" placeholder="Ex: Revisita do Sr. José, território da praça...">
+      </div>
+
+      <div class="form-group">
+        <label>📸 Foto / Selfie do dia (opcional)</label>
+        <div class="upload-box">
+          <label class="btn-upload-foto">
+            📷 Escolher foto
+            <input type="file" id="fotoInput" accept="image/*" style="display: none;" onchange="processarFoto(event)">
+          </label>
+          <div class="foto-preview-container" id="fotoPreviewBox">
+            <img id="fotoPreviewImg" class="foto-preview-img" alt="Preview">
+            <button type="button" class="btn-remove-preview" onclick="removerFotoPreview()">✕</button>
+          </div>
+        </div>
+      </div>
+
       <button type="submit" class="btn btn-primary">➕ Adicionar Horas</button>
     </form>
 
-    <div class="acoes-secundarias">
-      <button class="btn btn-desfazer" onclick="desfazerUltimo()">↩ Desfazer Último</button>
-      <button class="btn btn-reset" onclick="resetarTudo()">🗑️ Limpar Tudo</button>
+    <div class="acoes-bar">
+      <button class="btn btn-share" onclick="compartilharWhatsApp()">📲 Copiar Relatório</button>
+      <button class="btn btn-desfazer" onclick="desfazerUltimo()">↩ Desfazer</button>
     </div>
 
     <!-- LISTA DE REGISTROS -->
     <div class="secao-lista">
       <div class="secao-header">
-        <span class="secao-titulo">Registros</span>
+        <span class="secao-titulo">Diário & Registros</span>
         <span class="badge-count" id="badgeCount">0</span>
       </div>
 
@@ -559,16 +904,250 @@ input[type="date"]:focus, input[type="number"]:focus {
   </div>
 </div>
 
+<!-- MODAL VISUALIZAR FOTO GRANDE -->
+<div class="modal-overlay" id="modalFotoOverlay" onclick="fecharModalFoto()">
+  <div class="modal-foto-box" onclick="event.stopPropagation()">
+    <button class="btn-fechar-modal" onclick="fecharModalFoto()">✕</button>
+    <img id="modalFotoImg" class="modal-foto-img" alt="Foto">
+    <div class="modal-foto-legenda" id="modalFotoLegenda"></div>
+  </div>
+</div>
+
+<!-- MODAL BACKUP / IMPORTAR / EXPORTAR -->
+<div class="modal-overlay" id="modalBackupOverlay" onclick="fecharModalBackup()">
+  <div class="modal-backup-card" onclick="event.stopPropagation()">
+    <h3>💾 Backup dos Registros</h3>
+    <p>Exporte seus dados para não perder nada ou importe de outro celular.</p>
+    
+    <div class="backup-actions">
+      <button class="btn btn-export" onclick="exportarBackup()">📥 Baixar Arquivo de Backup (JSON)</button>
+      
+      <label class="btn-import-label">
+        📤 Restaurar Backup (JSON)
+        <input type="file" accept=".json" style="display: none;" onchange="importarBackup(event)">
+      </label>
+      
+      <button class="btn btn-cancelar" onclick="fecharModalBackup()">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 const STORAGE_KEY_REGISTROS = "horas_de_campo_registros";
 const STORAGE_KEY_TARGET = "horas_de_campo_target";
+const STORAGE_KEY_TIMER = "horas_de_campo_timer_state";
 
 let registros = carregarRegistros();
 let targetHoras = carregarTarget();
+let fotoTempBase64 = null;
 
-// Inicializa a data atual no input
+// ========================
+// CRONÔMETRO / TIMER
+// ========================
+let timerInterval = null;
+let timerRunning = false;
+let timerStartTime = 0;
+let timerAccumulated = 0; // em milissegundos
+
+restaurarEstadoTimer();
+
+function toggleTimer() {
+  if (!timerRunning) {
+    iniciarTimer();
+  } else {
+    pausarTimer();
+  }
+}
+
+function iniciarTimer() {
+  timerRunning = true;
+  timerStartTime = Date.now();
+  salvarEstadoTimer();
+  atualizarUiTimer();
+  
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    atualizarDisplayTimer();
+  }, 500);
+}
+
+function pausarTimer() {
+  if (!timerRunning) return;
+  timerAccumulated += Date.now() - timerStartTime;
+  timerRunning = false;
+  clearInterval(timerInterval);
+  salvarEstadoTimer();
+  atualizarUiTimer();
+  atualizarDisplayTimer();
+}
+
+function zerarTimer() {
+  if (timerAccumulated > 0 || timerRunning) {
+    if (!confirm("Deseja zerar o cronômetro?")) return;
+  }
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerStartTime = 0;
+  timerAccumulated = 0;
+  localStorage.removeItem(STORAGE_KEY_TIMER);
+  atualizarUiTimer();
+  atualizarDisplayTimer();
+}
+
+function getTimerTotalMs() {
+  if (timerRunning) {
+    return timerAccumulated + (Date.now() - timerStartTime);
+  }
+  return timerAccumulated;
+}
+
+function formatarTempoTimer(ms) {
+  const totalSegundos = Math.floor(ms / 1000);
+  const horas = Math.floor(totalSegundos / 3600);
+  const minutos = Math.floor((totalSegundos % 3600) / 60);
+  const segundos = totalSegundos % 60;
+  
+  const hh = String(horas).padStart(2, "0");
+  const mm = String(minutos).padStart(2, "0");
+  const ss = String(segundos).padStart(2, "0");
+  return `${hh}:${mm}:${ss}`;
+}
+
+function atualizarDisplayTimer() {
+  const ms = getTimerTotalMs();
+  document.getElementById("timerDisplay").textContent = formatarTempoTimer(ms);
+  
+  const horasDecimais = (ms / (1000 * 60 * 60)).toFixed(1);
+  document.getElementById("timerDecimal").textContent = `= ${horasDecimais}h`;
+}
+
+function atualizarUiTimer() {
+  const badge = document.getElementById("timerBadge");
+  const btnStart = document.getElementById("btnTimerStart");
+  
+  if (timerRunning) {
+    badge.textContent = "Gravando...";
+    badge.className = "timer-status-badge timer-status-rodando";
+    btnStart.textContent = "⏸ Pausar";
+    btnStart.className = "btn-timer btn-timer-pause";
+  } else if (timerAccumulated > 0) {
+    badge.textContent = "Pausado";
+    badge.className = "timer-status-badge timer-status-pausado";
+    btnStart.textContent = "▶ Continuar";
+    btnStart.className = "btn-timer btn-timer-start";
+  } else {
+    badge.textContent = "Parado";
+    badge.className = "timer-status-badge timer-status-parado";
+    btnStart.textContent = "▶ Iniciar";
+    btnStart.className = "btn-timer btn-timer-start";
+  }
+}
+
+function salvarEstadoTimer() {
+  const estado = {
+    running: timerRunning,
+    startTime: timerStartTime,
+    accumulated: timerAccumulated
+  };
+  localStorage.setItem(STORAGE_KEY_TIMER, JSON.stringify(estado));
+}
+
+function restaurarEstadoTimer() {
+  try {
+    const salvo = localStorage.getItem(STORAGE_KEY_TIMER);
+    if (salvo) {
+      const parsed = JSON.parse(salvo);
+      timerAccumulated = parsed.accumulated || 0;
+      if (parsed.running && parsed.startTime) {
+        timerRunning = true;
+        timerStartTime = parsed.startTime;
+        timerInterval = setInterval(atualizarDisplayTimer, 500);
+      }
+    }
+  } catch (e) {
+    console.error("Erro ao carregar timer:", e);
+  }
+  atualizarUiTimer();
+  atualizarDisplayTimer();
+}
+
+function aplicarHorasDoTimer() {
+  const ms = getTimerTotalMs();
+  if (ms < 60000) {
+    mostrarToast("O cronômetro tem menos de 1 minuto.");
+    return;
+  }
+  const horasCalculadas = +(ms / (1000 * 60 * 60)).toFixed(1);
+  document.getElementById("horasInput").value = horasCalculadas;
+  mostrarToast(`Preenchido: ${horasCalculadas}h no formulário.`);
+}
+
+// ========================
+// FOTOS & COMPACTAÇÃO
+// ========================
+function processarFoto(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      // Redimensionar para no máximo 800px para salvar levemente no localStorage
+      const maxDim = 800;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Qualidade JPEG 0.75 para otimizar espaço
+      fotoTempBase64 = canvas.toDataURL("image/jpeg", 0.75);
+
+      document.getElementById("fotoPreviewImg").src = fotoTempBase64;
+      document.getElementById("fotoPreviewBox").style.display = "block";
+      mostrarToast("Foto anexada!");
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removerFotoPreview() {
+  fotoTempBase64 = null;
+  document.getElementById("fotoInput").value = "";
+  document.getElementById("fotoPreviewImg").src = "";
+  document.getElementById("fotoPreviewBox").style.display = "none";
+}
+
+function abrirFotoGrande(src, legenda) {
+  document.getElementById("modalFotoImg").src = src;
+  document.getElementById("modalFotoLegenda").textContent = legenda || "";
+  document.getElementById("modalFotoOverlay").style.display = "flex";
+}
+
+function fecharModalFoto() {
+  document.getElementById("modalFotoOverlay").style.display = "none";
+}
+
+// ========================
+// CARREGAMENTO & PERSISTÊNCIA
+// ========================
 document.getElementById("dataInput").valueAsDate = new Date();
 if (targetHoras > 0) {
   document.getElementById("targetInput").value = targetHoras;
@@ -613,6 +1192,7 @@ function salvarRegistros() {
     localStorage.setItem(STORAGE_KEY_REGISTROS, JSON.stringify(registros));
   } catch (e) {
     console.error("Erro ao salvar:", e);
+    mostrarToast("Aviso: Memória local cheia! Tente remover algumas fotos antigas.");
   }
   renderizar();
 }
@@ -625,12 +1205,16 @@ function atualizarEstiloCheckbox(el) {
   }
 }
 
-function limparModalidades() {
+function limparFormulario() {
+  document.getElementById("horasInput").value = "";
+  document.getElementById("amigosInput").value = "";
+  document.getElementById("notaInput").value = "";
   const checkboxes = document.querySelectorAll('input[name="modalidade"]');
   checkboxes.forEach(cb => {
     cb.checked = false;
     cb.parentElement.classList.remove("selecionado");
   });
+  removerFotoPreview();
 }
 
 function adicionarHoras(event) {
@@ -638,6 +1222,8 @@ function adicionarHoras(event) {
 
   const dataVal = document.getElementById("dataInput").value;
   const horasVal = parseFloat(document.getElementById("horasInput").value);
+  const amigosVal = document.getElementById("amigosInput").value.trim();
+  const notaVal = document.getElementById("notaInput").value.trim();
   
   const selecionados = Array.from(document.querySelectorAll('input[name="modalidade"]:checked'))
     .map(cb => cb.value);
@@ -657,14 +1243,15 @@ function adicionarHoras(event) {
     data: dataVal,
     horas: horasVal,
     modalidades: selecionados,
+    amigos: amigosVal || null,
+    nota: notaVal || null,
+    foto: fotoTempBase64 || null,
     criadoEm: new Date().toISOString()
   };
 
   registros.unshift(novoRegistro);
   salvarRegistros();
-
-  document.getElementById("horasInput").value = "";
-  limparModalidades();
+  limparFormulario();
   mostrarToast("Registro adicionado com sucesso!");
 }
 
@@ -689,17 +1276,132 @@ function resetarTudo() {
     mostrarToast("Não há dados para limpar.");
     return;
   }
-  if (!confirm("Tem certeza que deseja apagar todos os registros e o target?")) return;
+  if (!confirm("Tem certeza que deseja apagar TODOS os registros, fotos e o target?")) return;
   registros = [];
   targetHoras = 0;
   localStorage.removeItem(STORAGE_KEY_REGISTROS);
   localStorage.removeItem(STORAGE_KEY_TARGET);
   document.getElementById("targetInput").value = "";
-  limparModalidades();
+  limparFormulario();
   renderizar();
   mostrarToast("Todos os registros foram apagados.");
 }
 
+// ========================
+// COMPARTILHAR NO WHATSAPP
+// ========================
+function compartilharWhatsApp() {
+  if (registros.length === 0) {
+    mostrarToast("Nenhum registro para gerar relatório.");
+    return;
+  }
+
+  let totalGeral = 0;
+  const modTotais = {};
+
+  registros.forEach(r => {
+    const h = Number(r.horas) || 0;
+    totalGeral += h;
+    const mods = normalizarModalidades(r);
+    mods.forEach(m => {
+      modTotais[m] = (modTotais[m] || 0) + (h / mods.length); // rateio se múltiplo
+    });
+  });
+
+  const hoje = new Date();
+  const mesAno = hoje.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  const mesFormatado = mesAno.charAt(0).toUpperCase() + mesAno.slice(1);
+
+  let texto = `📋 *Relatório de Campo — ${mesFormatado}*\n\n`;
+  texto += `⏱️ *Total Feito:* ${formatarHoras(totalGeral)}`;
+  if (targetHoras > 0) {
+    const faltam = targetHoras - totalGeral;
+    texto += ` / Target: ${formatarHoras(targetHoras)}\n`;
+    if (faltam > 0) texto += `🎯 *Faltam:* ${formatarHoras(faltam)}\n`;
+    else texto += `🎉 *Meta Atingida!*\n`;
+  } else {
+    texto += `\n`;
+  }
+
+  texto += `\n*Modalidades:*\n`;
+  for (const [mod, horas] of Object.entries(modTotais)) {
+    texto += `• ${mod}: ${formatarHoras(horas)}\n`;
+  }
+  texto += `\n*Total de Saídas:* ${registros.length}`;
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(texto).then(() => {
+      mostrarToast("Relatório copiado! Cole no WhatsApp 📋");
+    }).catch(() => {
+      prompt("Copie seu relatório:", texto);
+    });
+  } else {
+    prompt("Copie seu relatório:", texto);
+  }
+}
+
+// ========================
+// BACKUP & RESTAURAÇÃO
+// ========================
+function abrirModalBackup() {
+  document.getElementById("modalBackupOverlay").style.display = "flex";
+}
+function fecharModalBackup() {
+  document.getElementById("modalBackupOverlay").style.display = "none";
+}
+
+function exportarBackup() {
+  const dados = {
+    versao: 1,
+    dataBackup: new Date().toISOString(),
+    target: targetHoras,
+    registros: registros
+  };
+  const jsonStr = JSON.stringify(dados, null, 2);
+  const blob = new Blob([jsonStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `backup_horas_campo_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  mostrarToast("Backup baixado com sucesso!");
+  fecharModalBackup();
+}
+
+function importarBackup(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const dados = JSON.parse(e.target.result);
+      if (!dados.registros || !Array.isArray(dados.registros)) {
+        throw new Error("Formato inválido");
+      }
+      if (confirm(`Restaurar ${dados.registros.length} registros do backup? Isso substituirá os registros atuais.`)) {
+        registros = dados.registros;
+        if (dados.target) {
+          targetHoras = Number(dados.target) || 0;
+          document.getElementById("targetInput").value = targetHoras || "";
+        }
+        salvarRegistros();
+        salvarTarget();
+        fecharModalBackup();
+        mostrarToast("Backup restaurado com sucesso!");
+      }
+    } catch (err) {
+      alert("Erro ao ler o arquivo de backup. Verifique se é um arquivo JSON válido.");
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ========================
+// RENDERIZAÇÃO
+// ========================
 function formatarDataBR(dataIso) {
   if (!dataIso) return "";
   const [ano, mes, dia] = dataIso.split("-");
@@ -717,12 +1419,8 @@ function tagClassModalidade(mod) {
 }
 
 function normalizarModalidades(reg) {
-  if (Array.isArray(reg.modalidades)) {
-    return reg.modalidades;
-  }
-  if (reg.modalidade) {
-    return [reg.modalidade];
-  }
+  if (Array.isArray(reg.modalidades)) return reg.modalidades;
+  if (reg.modalidade) return [reg.modalidade];
   return [];
 }
 
@@ -794,8 +1492,21 @@ function renderizar() {
       <span class="item-modalidade ${tagClassModalidade(m)}">${m}</span>
     `).join("");
 
+    const fotoHtml = r.foto ? `
+      <img src="${r.foto}" class="item-thumbnail" alt="Foto do campo" onclick="abrirFotoGrande('${r.foto}', '${formatarDataBR(r.data)} - ${r.amigos ? 'Com ' + r.amigos : ''}')" title="Clique para ampliar">
+    ` : "";
+
+    const amigosHtml = r.amigos ? `
+      <div class="item-amigos">👥 <strong>Com:</strong> ${escapeHtml(r.amigos)}</div>
+    ` : "";
+
+    const notaHtml = r.nota ? `
+      <div class="item-nota">“${escapeHtml(r.nota)}”</div>
+    ` : "";
+
     return `
       <li class="item-registro">
+        ${fotoHtml}
         <div class="item-info">
           <div class="item-topo">
             <span class="item-data">📅 ${formatarDataBR(r.data)}</span>
@@ -804,6 +1515,8 @@ function renderizar() {
           <div class="tags-container">
             ${tagsHtml}
           </div>
+          ${amigosHtml}
+          ${notaHtml}
         </div>
         <button type="button" class="btn-remover" title="Remover este registro" onclick="removerRegistro('${r.id}')">
           🗑️
@@ -811,6 +1524,17 @@ function renderizar() {
       </li>
     `;
   }).join("");
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return str.replace(/[&<>"']/g, m => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[m]);
 }
 
 function formatarHoras(num) {
@@ -825,7 +1549,7 @@ function mostrarToast(msg) {
   if (toastTimer) clearTimeout(toastTimer);
   toastTimer = setTimeout(() => {
     toast.classList.remove("visivel");
-  }, 2200);
+  }, 2300);
 }
 </script>
 
