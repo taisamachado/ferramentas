@@ -129,15 +129,60 @@ li {
   border-radius: 20px;
   text-align: center;
 }
+
+/* ===== ABAS + ORÇAMENTO MENSAL ===== */
+.hidden { display: none !important; }
+.m-tabs { display: flex; gap: 8px; max-width: 400px; margin: 0 auto 12px; }
+.m-tabs button { margin: 0; background: #cfd8dc; color: #37474f; font-weight: 700; }
+.m-tabs button.ativo { background: #1e3a8a; color: #fff; }
+.mensal { max-width: 400px; margin: auto; background: #fff; border-radius: 14px; padding: 14px; box-shadow: 0 4px 20px rgba(0,0,0,.15); color: #1f2937; }
+.mensal h3 { margin: 0; font-size: 16px; }
+.m-resumo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.m-resumo div { background: #f3f4f6; border-radius: 10px; padding: 8px 4px; text-align: center; font-size: 11px; color: #6b7280; }
+.m-resumo b { display: block; font-size: 14px; color: #111827; margin-top: 2px; }
+.m-resumo .ok b { color: #16a34a; }
+.m-resumo .pend b { color: #d97706; }
+.m-cat { border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 12px; overflow: hidden; }
+.m-cat-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: #f8fafc; padding: 10px 12px; }
+.m-cat-total { font-weight: 700; font-size: 14px; white-space: nowrap; }
+.m-linha { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-top: 1px solid #f1f5f9; }
+.m-linha input[type=checkbox] { width: 22px; height: 22px; margin: 0; flex: none; accent-color: #16a34a; }
+.m-linha .m-info { flex: 1; min-width: 0; cursor: pointer; }
+.m-linha .m-nome { font-size: 14px; font-weight: 600; }
+.m-linha .m-sub { font-size: 12px; color: #6b7280; }
+.m-linha .m-valor { font-weight: 700; font-size: 14px; white-space: nowrap; }
+.m-linha .m-valor.indef { color: #9ca3af; font-weight: 600; }
+.m-linha.feito .m-nome { color: #6b7280; }
+.m-mini { width: auto; margin: 0; padding: 6px 10px; font-size: 13px; background: #e5e7eb; color: #374151; }
+.m-mini.add { background: #dbeafe; color: #1d4ed8; }
+.m-mini.red { background: #fee2e2; color: #b91c1c; }
+.m-cat-foot { padding: 8px 12px; border-top: 1px solid #f1f5f9; display: flex; gap: 8px; }
+.m-info-linha { display: flex; justify-content: space-between; gap: 12px; padding: 9px 12px; border-top: 1px solid #f1f5f9; font-size: 14px; cursor: pointer; }
+.m-info-linha span:first-child { color: #6b7280; }
+.m-info-linha span:last-child { font-weight: 600; text-align: right; word-break: break-all; }
+.m-acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+.m-acoes button, .m-acoes label { margin: 0; padding: 11px; font-size: 14px; text-align: center; border-radius: 6px; color: #fff; display: block; }
+.m-vazio { text-align: center; color: #6b7280; padding: 16px 8px; font-size: 14px; }
+.m-form { text-align: left; width: min(92vw, 340px); }
+.m-form h3 { text-align: center; }
+.m-chk { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 15px; }
+.m-chk input { width: 22px; height: 22px; margin: 0; }
+.m-form button { margin-top: 10px; }
 </style>
 </head>
 
 <body>
 
+<div class="m-tabs">
+  <button type="button" class="ativo" id="tabViagem" onclick="mAba('Viagem')">✈️ Viagem</button>
+  <button type="button" id="tabMensal" onclick="mAba('Mensal')">📅 Mensal</button>
+</div>
+
+<div id="painelViagem">
 <div class="card">
   <div class="card-content">
 
-    <h2>Orçamento Mensal</h2>
+    <h2>Orçamento da Viagem</h2>
 
     <input type="number" id="orcamento" placeholder="Definir orçamento mensal">
     <button onclick="salvarOrcamento()">Salvar orçamento</button>
@@ -155,6 +200,39 @@ li {
     <button class="historico" onclick="abrirHistorico()">Ver histórico</button>
     <button class="reset" onclick="resetarTudo()">Resetar tudo</button>
 
+  </div>
+</div>
+</div>
+
+<div id="painelMensal" class="mensal hidden">
+  <div class="m-resumo">
+    <div>Total conhecido<b id="mTotal">R$ 0,00</b></div>
+    <div class="ok">Pago<b id="mPago">R$ 0,00</b></div>
+    <div class="pend">A pagar<b id="mAPagar">R$ 0,00</b></div>
+  </div>
+  <div id="mSemValor" class="m-vazio" style="padding:0 0 10px;font-size:12px"></div>
+  <div id="mCats"></div>
+  <div id="mInfo"></div>
+  <div class="m-acoes">
+    <button type="button" style="background:#1e3a8a" onclick="mNovaCategoria()">+ Categoria</button>
+    <button type="button" class="desfazer" onclick="mNovoMes()">🔄 Novo mês</button>
+    <button type="button" class="historico" onclick="mExportar()">📥 Exportar</button>
+    <label style="background:#6b7280;cursor:pointer">📤 Importar<input type="file" accept=".json,application/json" hidden onchange="mImportar(event)"></label>
+  </div>
+</div>
+
+<!-- MODAL ITEM MENSAL -->
+<div class="modal" id="modalItem">
+  <div class="modal-content m-form">
+    <h3 id="miTitulo">Item</h3>
+    <input type="text" id="miNome" placeholder="Nome (ex.: Condomínio)">
+    <input type="number" id="miValor" step="0.01" min="0" placeholder="Valor (vazio = a definir)">
+    <input type="text" id="miPag" placeholder="Pagamento (ex.: Boleto)">
+    <input type="text" id="miNota" placeholder="Observação (opcional)">
+    <label class="m-chk"><input type="checkbox" id="miOk"> Pago / confirmado</label>
+    <button type="button" onclick="mSalvarItem()">Salvar</button>
+    <button type="button" class="reset" id="miDel" onclick="mExcluirItem()">Excluir</button>
+    <button type="button" class="btn-nao" onclick="fecharModal('modalItem')">Cancelar</button>
   </div>
 </div>
 
@@ -290,6 +368,159 @@ function resetarTudo() {
   localStorage.removeItem("historico");
   location.reload();
 }
+const MKEY = "orcamento_mensal_v1";
+let M = { cats: [], info: null };
+try { const v = JSON.parse(localStorage.getItem(MKEY)); if (v && Array.isArray(v.cats)) M = v; } catch (e) {}
+let miCat = null, miId = null;
+
+const mEsc = t => String(t ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const mBrl = n => "R$ " + Number(n).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const mId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const mSalvarLS = () => { try { localStorage.setItem(MKEY, JSON.stringify(M)); } catch (e) { alert("Não consegui salvar (sem espaço no navegador)."); } };
+const mTemValor = i => i.valor !== null && i.valor !== "" && !isNaN(Number(i.valor));
+
+function mAba(nome) {
+  ["Viagem", "Mensal"].forEach(n => {
+    document.getElementById("painel" + n).classList.toggle("hidden", n !== nome);
+    document.getElementById("tab" + n).classList.toggle("ativo", n === nome);
+  });
+  try { localStorage.setItem("orcamento_aba", nome); } catch (e) {}
+}
+
+function mRender() {
+  let total = 0, pago = 0, semValor = 0;
+  M.cats.forEach(c => c.itens.forEach(i => {
+    if (mTemValor(i)) { total += Number(i.valor); if (i.ok) pago += Number(i.valor); } else semValor++;
+  }));
+  document.getElementById("mTotal").textContent = mBrl(total);
+  document.getElementById("mPago").textContent = mBrl(pago);
+  document.getElementById("mAPagar").textContent = mBrl(total - pago);
+  document.getElementById("mSemValor").textContent = semValor ? semValor + " item(ns) sem valor definido, não entram na soma." : "";
+
+  const box = document.getElementById("mCats");
+  if (!M.cats.length) {
+    box.innerHTML = '<div class="m-vazio">Nenhuma categoria ainda.<br>Toque em <b>+ Categoria</b> ou use <b>Importar</b> para carregar o seu arquivo de dados.</div>';
+  } else {
+    box.innerHTML = M.cats.map(c => {
+      const sub = c.itens.reduce((a, i) => a + (mTemValor(i) ? Number(i.valor) : 0), 0);
+      const linhas = c.itens.map(i => `
+        <div class="m-linha ${i.ok ? "feito" : ""}">
+          <input type="checkbox" ${i.ok ? "checked" : ""} data-mchk="${c.id}|${i.id}" aria-label="Pago">
+          <div class="m-info" data-medit="${c.id}|${i.id}">
+            <div class="m-nome">${mEsc(i.nome)}</div>
+            ${(i.pag || i.nota) ? `<div class="m-sub">${[i.pag, i.nota].filter(Boolean).map(mEsc).join(" · ")}</div>` : ""}
+          </div>
+          <div class="m-valor ${mTemValor(i) ? "" : "indef"}">${mTemValor(i) ? mBrl(i.valor) : "A definir"}</div>
+        </div>`).join("");
+      return `<div class="m-cat">
+        <div class="m-cat-head"><h3>${mEsc(c.nome)}</h3><span class="m-cat-total">${mBrl(sub)}</span></div>
+        ${linhas}
+        <div class="m-cat-foot">
+          <button type="button" class="m-mini add" data-madd="${c.id}">+ Adicionar</button>
+          <button type="button" class="m-mini" data-mren="${c.id}">✏️ Renomear</button>
+          <button type="button" class="m-mini red" data-mdelcat="${c.id}">🗑</button>
+        </div></div>`;
+    }).join("");
+  }
+
+  const info = document.getElementById("mInfo");
+  if (M.info && M.info.linhas) {
+    info.innerHTML = `<div class="m-cat"><div class="m-cat-head"><h3>${mEsc(M.info.titulo || "Informações")}</h3><span class="m-cat-total" style="font-size:12px;color:#6b7280">fora da soma</span></div>
+      ${M.info.linhas.map((l, n) => `<div class="m-info-linha" data-minfo="${n}"><span>${mEsc(l[0])}</span><span>${mEsc(l[1])}</span></div>`).join("")}
+      ${M.info.portal ? `<div class="m-info-linha" style="cursor:default"><span>Portal</span><span>${mEsc(M.info.portal)}</span></div>` : ""}</div>`;
+  } else info.innerHTML = "";
+
+  document.querySelectorAll("[data-mchk]").forEach(e => e.onchange = () => {
+    const [c, i] = e.dataset.mchk.split("|"), it = mAchar(c, i); if (!it) return;
+    it.ok = e.checked; mSalvarLS(); mRender();
+  });
+  document.querySelectorAll("[data-medit]").forEach(e => e.onclick = () => { const [c, i] = e.dataset.medit.split("|"); mAbrirItem(c, i); });
+  document.querySelectorAll("[data-madd]").forEach(e => e.onclick = () => mAbrirItem(e.dataset.madd, null));
+  document.querySelectorAll("[data-mren]").forEach(e => e.onclick = () => {
+    const c = M.cats.find(x => x.id === e.dataset.mren), n = prompt("Novo nome da categoria:", c.nome);
+    if (n && n.trim()) { c.nome = n.trim(); mSalvarLS(); mRender(); }
+  });
+  document.querySelectorAll("[data-mdelcat]").forEach(e => e.onclick = () => {
+    const c = M.cats.find(x => x.id === e.dataset.mdelcat);
+    if (confirm(`Tem certeza que quer apagar a categoria "${c.nome}" e seus ${c.itens.length} item(ns)?\n\nEssa ação não pode ser desfeita.`)) {
+      M.cats = M.cats.filter(x => x.id !== c.id); mSalvarLS(); mRender();
+    }
+  });
+  document.querySelectorAll("[data-minfo]").forEach(e => e.onclick = () => {
+    const l = M.info.linhas[+e.dataset.minfo], v = prompt(l[0] + ":", l[1]);
+    if (v !== null) { l[1] = v.trim(); mSalvarLS(); mRender(); }
+  });
+}
+
+function mAchar(cid, iid) { const c = M.cats.find(x => x.id === cid); return c && c.itens.find(i => i.id === iid); }
+
+function mAbrirItem(cid, iid) {
+  miCat = cid; miId = iid;
+  const it = iid ? mAchar(cid, iid) : null;
+  document.getElementById("miTitulo").textContent = it ? "Editar item" : "Novo item";
+  document.getElementById("miNome").value = it ? it.nome : "";
+  document.getElementById("miValor").value = it && mTemValor(it) ? it.valor : "";
+  document.getElementById("miPag").value = it ? (it.pag || "") : "";
+  document.getElementById("miNota").value = it ? (it.nota || "") : "";
+  document.getElementById("miOk").checked = !!(it && it.ok);
+  document.getElementById("miDel").style.display = it ? "block" : "none";
+  document.getElementById("modalItem").style.display = "flex";
+}
+
+function mSalvarItem() {
+  const nome = document.getElementById("miNome").value.trim();
+  if (!nome) { alert("Digite o nome do item."); return; }
+  const v = document.getElementById("miValor").value;
+  const dados = { nome, valor: v === "" ? null : Number(v), pag: document.getElementById("miPag").value.trim(), nota: document.getElementById("miNota").value.trim(), ok: document.getElementById("miOk").checked };
+  const c = M.cats.find(x => x.id === miCat); if (!c) return;
+  if (miId) Object.assign(mAchar(miCat, miId), dados); else c.itens.push({ id: mId(), ...dados });
+  mSalvarLS(); fecharModal("modalItem"); mRender();
+}
+
+function mExcluirItem() {
+  const it = mAchar(miCat, miId); if (!it) return;
+  if (!confirm(`Tem certeza que quer apagar "${it.nome}"?\n\nEssa ação não pode ser desfeita.`)) return;
+  const c = M.cats.find(x => x.id === miCat); c.itens = c.itens.filter(i => i.id !== miId);
+  mSalvarLS(); fecharModal("modalItem"); mRender();
+}
+
+function mNovaCategoria() {
+  const n = prompt("Nome da nova categoria:");
+  if (n && n.trim()) { M.cats.push({ id: mId(), nome: n.trim(), itens: [] }); mSalvarLS(); mRender(); }
+}
+
+function mNovoMes() {
+  const marcados = M.cats.reduce((a, c) => a + c.itens.filter(i => i.ok).length, 0);
+  if (!marcados) { alert("Nada marcado como pago."); return; }
+  if (!confirm(`Começar um novo mês? Isso desmarca os ${marcados} item(ns) pagos. Valores e nomes ficam.`)) return;
+  M.cats.forEach(c => c.itens.forEach(i => { i.ok = false; })); mSalvarLS(); mRender();
+}
+
+function mExportar() {
+  const a = document.createElement("a"), u = URL.createObjectURL(new Blob([JSON.stringify(M, null, 2)], { type: "application/json" }));
+  a.href = u; a.download = "orcamento-mensal-backup.json"; a.click(); URL.revokeObjectURL(u);
+}
+
+function mImportar(ev) {
+  const f = ev.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const v = JSON.parse(r.result);
+      if (!v || !Array.isArray(v.cats)) throw 0;
+      const n = v.cats.reduce((a, c) => a + (c.itens || []).length, 0);
+      if (M.cats.length && !confirm(`Isso substitui o orçamento mensal atual por ${v.cats.length} categoria(s) e ${n} item(ns). Continuar?`)) return;
+      v.cats.forEach(c => { c.id = c.id || mId(); c.itens = (c.itens || []).map(i => ({ id: i.id || mId(), nome: String(i.nome || ""), valor: i.valor === "" || i.valor === undefined ? null : i.valor, pag: i.pag || "", nota: i.nota || "", ok: !!i.ok })); });
+      M = { cats: v.cats, info: v.info || null }; mSalvarLS(); mRender(); mAba("Mensal"); alert("Orçamento mensal carregado!");
+    } catch (e) { alert("Arquivo inválido."); }
+    ev.target.value = "";
+  };
+  r.readAsText(f);
+}
+
+mRender();
+try { if (localStorage.getItem("orcamento_aba") === "Mensal") mAba("Mensal"); } catch (e) {}
+
 if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 }
