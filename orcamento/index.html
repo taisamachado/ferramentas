@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meu Orçamento</title>
+<meta name="theme-color" content="#4CAF50">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Orçamento">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #eaeaea;
+  padding: 20px;
+}
+
+/* CARD */
+.card {
+  position: relative;
+  max-width: 400px;
+  margin: auto;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* IMAGEM NO FUNDO DO CARD */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("img/fundo.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 100;
+  z-index: 0;
+}
+
+/* CONTEÚDO */
+.card-content {
+  position: relative;
+  z-index: 1;
+  background: rgba(255,255,255,0.3);
+  padding: 20px;
+}
+
+h2 { text-align: center; }
+
+input, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+button {
+  border: none;
+  border-radius: 6px;
+  color: white;
+  background: #4CAF50;
+}
+
+.desfazer { background: #FF9800; }
+.historico { background: #2196F3; }
+.reset { background: #f44336; }
+
+.total {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.saldo {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.verde { color: green; }
+.amarelo { color: orange; }
+.vermelho { color: red; }
+
+/* 🔥 MODAIS – CORREÇÃO AQUI */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* 👈 ISSO resolve */
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 320px;
+  text-align: center;
+}
+
+.btn-nao {
+  background: #ccc;
+  color: black;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+li {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.faixa-saldo {
+  margin-top: 12px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <div class="card-content">
+
+    <h2>Orçamento Mensal</h2>
+
+    <input type="number" id="orcamento" placeholder="Definir orçamento mensal">
+    <button onclick="salvarOrcamento()">Salvar orçamento</button>
+
+    <input type="text" id="descricao" placeholder="Descrição do gasto">
+    <input type="number" id="valor" placeholder="Valor da compra">
+    <button onclick="iniciarCompra()">Registrar compra</button>
+
+    <div class="faixa-saldo">
+    <div class="total" id="totalGasto"></div>
+    <div class="saldo" id="saldo"></div>
+</div>
+
+    <button class="desfazer" onclick="desfazerUltima()">Desfazer última compra</button>
+    <button class="historico" onclick="abrirHistorico()">Ver histórico</button>
+    <button class="reset" onclick="resetarTudo()">Resetar tudo</button>
+
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAÇÃO -->
+<div class="modal" id="modalConfirmacao">
+  <div class="modal-content">
+    <p id="modalTexto"></p>
+    <button onclick="confirmar()">Sim</button>
+    <button class="btn-nao" onclick="fecharModal('modalConfirmacao')">Não</button>
+  </div>
+</div>
+
+<!-- MODAL HISTÓRICO -->
+<div class="modal" id="modalHistorico">
+  <div class="modal-content">
+    <h3>Histórico</h3>
+    <ul id="listaHistorico"></ul>
+    <button class="btn-nao" onclick="fecharModal('modalHistorico')">Fechar</button>
+  </div>
+</div>
+
+<script>
+let saldo = Number(localStorage.getItem("saldo"));
+let historico = JSON.parse(localStorage.getItem("historico")) || [];
+
+let compraTemp = null;
+let descricaoTemp = "";
+let etapa = 0;
+
+const frases = [
+  "Isso é necessidade ou emoção?",
+  "Seu eu do futuro está julgando 🙄",
+  "Dopamina agora ou paz depois?",
+  "Pix hoje, boleto emocional amanhã",
+  "Isso vale uma hora da sua vida?",
+  "Compra rápida, arrependimento eterno?"
+];
+
+atualizarTela();
+
+function salvarOrcamento() {
+  const v = Number(document.getElementById("orcamento").value);
+  if (v > 0) {
+    saldo = v;
+    salvar();
+  }
+}
+
+function iniciarCompra() {
+  const valor = Number(document.getElementById("valor").value);
+  const desc = document.getElementById("descricao").value.trim();
+  if (!saldo || valor <= 0 || !desc) return;
+
+  compraTemp = valor;
+  descricaoTemp = desc;
+  etapa = 0;
+
+  if (valor >= saldo * 0.2) {
+    abrirModal(frases[Math.floor(Math.random() * frases.length)]);
+  } else {
+    finalizarCompra();
+  }
+}
+
+function confirmar() {
+  if (etapa === 0) {
+    etapa = 1;
+    abrirModal("Calma… é só por mais umas semanas 😌");
+  } else {
+    finalizarCompra();
+    fecharModal("modalConfirmacao");
+  }
+}
+
+function finalizarCompra() {
+  saldo -= compraTemp;
+  historico.unshift({ descricao: descricaoTemp, valor: compraTemp });
+  salvar();
+}
+
+function desfazerUltima() {
+  if (!historico.length) return;
+  const ultima = historico.shift();
+  saldo += ultima.valor;
+  salvar();
+}
+
+function salvar() {
+  localStorage.setItem("saldo", saldo);
+  localStorage.setItem("historico", JSON.stringify(historico));
+  atualizarTela();
+  document.getElementById("valor").value = "";
+  document.getElementById("descricao").value = "";
+}
+
+function atualizarTela() {
+  if (!saldo && saldo !== 0) return;
+
+  const total = historico.reduce((s, i) => s + i.valor, 0);
+  document.getElementById("totalGasto").innerText =
+    "Total gasto: R$ " + total.toFixed(2);
+
+  const el = document.getElementById("saldo");
+  el.innerText = "Saldo: R$ " + saldo.toFixed(2);
+  el.className = "saldo";
+
+  const perc = saldo / (saldo + total);
+  if (perc > 0.5) el.classList.add("verde");
+  else if (perc > 0.2) el.classList.add("amarelo");
+  else el.classList.add("vermelho");
+}
+
+function abrirHistorico() {
+  const ul = document.getElementById("listaHistorico");
+  ul.innerHTML = historico.length
+    ? historico.map(i => `<li>${i.descricao} — R$ ${i.valor.toFixed(2)}</li>`).join("")
+    : "<li>Nenhuma compra registrada</li>";
+  document.getElementById("modalHistorico").style.display = "flex";
+}
+
+function abrirModal(txt) {
+  document.getElementById("modalTexto").innerText = txt;
+  document.getElementById("modalConfirmacao").style.display = "flex";
+}
+
+function fecharModal(id) {
+  document.getElementById(id).style.display = "none";
+}
+
+function resetarTudo() {
+  if (!confirm("Isso vai apagar tudo. Continuar?")) return;
+  localStorage.removeItem("saldo");
+  localStorage.removeItem("historico");
+  location.reload();
+}
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+</script>
+
+</body>
+</html>
