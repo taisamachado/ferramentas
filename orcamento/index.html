@@ -137,6 +137,8 @@ li {
 .m-tabs button.ativo { background: #1e3a8a; color: #fff; }
 .mensal { max-width: 400px; margin: auto; background: #fff; border-radius: 14px; padding: 14px; box-shadow: 0 4px 20px rgba(0,0,0,.15); color: #1f2937; }
 .mensal h3 { margin: 0; font-size: 16px; }
+.m-mes { text-align: center; font-weight: 800; font-size: 17px; margin-bottom: 10px; color: #1e3a8a; }
+.m-valor { cursor: pointer; }
 .m-resumo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
 .m-resumo div { background: #f3f4f6; border-radius: 10px; padding: 8px 4px; text-align: center; font-size: 11px; color: #6b7280; }
 .m-resumo b { display: block; font-size: 14px; color: #111827; margin-top: 2px; }
@@ -205,6 +207,7 @@ li {
 </div>
 
 <div id="painelMensal" class="mensal hidden">
+  <div class="m-mes" id="mMes"></div>
   <div class="m-resumo">
     <div>Total conhecido<b id="mTotal">R$ 0,00</b></div>
     <div class="ok">Pago<b id="mPago">R$ 0,00</b></div>
@@ -371,6 +374,10 @@ function resetarTudo() {
 const MKEY = "orcamento_mensal_v1";
 let M = { cats: [], info: null };
 try { const v = JSON.parse(localStorage.getItem(MKEY)); if (v && Array.isArray(v.cats)) M = v; } catch (e) {}
+const mAgora = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); };
+if (!M.mes) M.mes = mAgora();
+const mNomeMes = ym => { const [y, m] = ym.split("-").map(Number), t = new Date(y, m - 1, 1).toLocaleDateString("pt-BR", { month: "long", year: "numeric" }); return t.charAt(0).toUpperCase() + t.slice(1); };
+const mProxMes = ym => { let [y, m] = ym.split("-").map(Number); m++; if (m > 12) { m = 1; y++; } return y + "-" + String(m).padStart(2, "0"); };
 let miCat = null, miId = null;
 
 const mEsc = t => String(t ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -388,6 +395,7 @@ function mAba(nome) {
 }
 
 function mRender() {
+  document.getElementById("mMes").textContent = "📅 " + mNomeMes(M.mes);
   let total = 0, pago = 0, semValor = 0;
   M.cats.forEach(c => c.itens.forEach(i => {
     if (mTemValor(i)) { total += Number(i.valor); if (i.ok) pago += Number(i.valor); } else semValor++;
@@ -410,7 +418,7 @@ function mRender() {
             <div class="m-nome">${mEsc(i.nome)}</div>
             ${(i.pag || i.nota) ? `<div class="m-sub">${[i.pag, i.nota].filter(Boolean).map(mEsc).join(" · ")}</div>` : ""}
           </div>
-          <div class="m-valor ${mTemValor(i) ? "" : "indef"}">${mTemValor(i) ? mBrl(i.valor) : "A definir"}</div>
+          <div class="m-valor ${mTemValor(i) ? "" : "indef"}" data-mval="${c.id}|${i.id}" title="Toque para editar o valor">${mTemValor(i) ? mBrl(i.valor) : "A definir"}</div>
         </div>`).join("");
       return `<div class="m-cat">
         <div class="m-cat-head"><h3>${mEsc(c.nome)}</h3><span class="m-cat-total">${mBrl(sub)}</span></div>
@@ -433,6 +441,16 @@ function mRender() {
   document.querySelectorAll("[data-mchk]").forEach(e => e.onchange = () => {
     const [c, i] = e.dataset.mchk.split("|"), it = mAchar(c, i); if (!it) return;
     it.ok = e.checked; mSalvarLS(); mRender();
+  });
+  document.querySelectorAll("[data-mval]").forEach(e => e.onclick = () => {
+    const [c, i] = e.dataset.mval.split("|"), it = mAchar(c, i); if (!it) return;
+    const r = prompt(`Valor de "${it.nome}" (deixe vazio para "a definir"):`, mTemValor(it) ? String(it.valor).replace(".", ",") : "");
+    if (r === null) return;
+    const t = r.trim().replace(/^R\$\s*/i, "").replace(/\./g, "").replace(",", ".");
+    if (t === "") it.valor = null;
+    else if (isNaN(Number(t)) || Number(t) < 0) { alert("Valor inválido. Use só números, por exemplo 160,50."); return; }
+    else it.valor = Number(t);
+    mSalvarLS(); mRender();
   });
   document.querySelectorAll("[data-medit]").forEach(e => e.onclick = () => { const [c, i] = e.dataset.medit.split("|"); mAbrirItem(c, i); });
   document.querySelectorAll("[data-madd]").forEach(e => e.onclick = () => mAbrirItem(e.dataset.madd, null));
@@ -490,10 +508,11 @@ function mNovaCategoria() {
 }
 
 function mNovoMes() {
-  const marcados = M.cats.reduce((a, c) => a + c.itens.filter(i => i.ok).length, 0);
-  if (!marcados) { alert("Nada marcado como pago."); return; }
-  if (!confirm(`Começar um novo mês? Isso desmarca os ${marcados} item(ns) pagos. Valores e nomes ficam.`)) return;
-  M.cats.forEach(c => c.itens.forEach(i => { i.ok = false; })); mSalvarLS(); mRender();
+  const prox = mProxMes(M.mes), itens = M.cats.reduce((a, c) => a + c.itens.length, 0);
+  const marcados = M.cats.reduce((a, c) => a + c.itens.filter(i => i.ok).length, 0), faltam = itens - marcados;
+  if (!itens) { alert("Cadastre ou importe os itens antes."); return; }
+  if (!confirm(`Começar ${mNomeMes(prox)}?\n\n` + (faltam ? `Atenção: ${faltam} item(ns) de ${mNomeMes(M.mes)} ainda não estão marcados como pagos.\n\n` : "") + `Os ${itens} itens e seus valores continuam; só os "pagos" são desmarcados.`)) return;
+  M.mes = prox; M.cats.forEach(c => c.itens.forEach(i => { i.ok = false; })); mSalvarLS(); mRender();
 }
 
 function mExportar() {
@@ -511,7 +530,7 @@ function mImportar(ev) {
       const n = v.cats.reduce((a, c) => a + (c.itens || []).length, 0);
       if (M.cats.length && !confirm(`Isso substitui o orçamento mensal atual por ${v.cats.length} categoria(s) e ${n} item(ns). Continuar?`)) return;
       v.cats.forEach(c => { c.id = c.id || mId(); c.itens = (c.itens || []).map(i => ({ id: i.id || mId(), nome: String(i.nome || ""), valor: i.valor === "" || i.valor === undefined ? null : i.valor, pag: i.pag || "", nota: i.nota || "", ok: !!i.ok })); });
-      M = { cats: v.cats, info: v.info || null }; mSalvarLS(); mRender(); mAba("Mensal"); alert("Orçamento mensal carregado!");
+      M = { cats: v.cats, info: v.info || null, mes: /^\d{4}-\d{2}$/.test(v.mes || "") ? v.mes : mAgora() }; mSalvarLS(); mRender(); mAba("Mensal"); alert("Orçamento mensal carregado!");
     } catch (e) { alert("Arquivo inválido."); }
     ev.target.value = "";
   };
